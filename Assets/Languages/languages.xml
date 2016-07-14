@@ -1,0 +1,89 @@
+<?xml version ="1.0" encoding ="utf-8" ?>
+<languages>
+  <language>
+    <name>English</name>
+    <singlePlayer>Single player</singlePlayer>
+    <multiPlayer>Multiplayer</multiPlayer>
+    <options>Options</options>
+    <exit>Exit</exit>
+    <difficulty>Difficulty:</difficulty>
+    <darkness>Darkness</darkness>
+    <play>Play</play>
+    <back>Back</back>
+    <server>Server</server>
+    <client>Client</client>
+    <drawing>Drawing</drawing>
+    <sound>Sound</sound>
+    <game>Game</game>
+    <drawingQuality>Drawing quality:</drawingQuality>
+    <accept>Accept</accept>
+    <musicVolume>Music volume:</musicVolume>
+    <effectsVolume>Effects volume:</effectsVolume>
+    <nickname>Nickname:</nickname>
+    <crosshairColor>Crosshair color:</crosshairColor>
+    <mouseSensitivity>Mouse sensitivity:</mouseSensitivity>
+    <create>Create</create>
+    <connect>Connect</connect>
+    <low>Low</low>
+    <middle>Middle</middle>
+    <high>High</high>
+    <easy>Easy</easy>
+    <normal>Normal</normal>
+    <hard>Hard</hard>
+    <red>Red</red>
+    <green>Green</green>
+    <blue>Blue</blue>
+    <lang>Language:</lang>
+    <continue>Continue</continue>
+    <exitToMainMenu>Exit to the main menu</exitToMainMenu>
+    <health>Health:</health>
+    <armor>Armor:</armor>
+    <exp>Experience:</exp>
+    <color>Color:</color>
+    <mouth>Mouth:</mouth>
+    <eyes>Eyes:</eyes>
+  </language>
+  <language>
+    <name>Русский</name>
+    <singlePlayer>Одиночная игра</singlePlayer>
+    <multiPlayer>Сетевая игра</multiPlayer>
+    <options>Настройки</options>
+    <exit>Выйти</exit>
+    <difficulty>Сложность:</difficulty>
+    <darkness>Мрак</darkness>
+    <play>Играть</play>
+    <back>Назад</back>
+    <server>Сервер</server>
+    <client>Клиент</client>
+    <drawing>Графика</drawing>
+    <sound>Звук</sound>
+    <game>Игра</game>
+    <drawingQuality>Качество графики:</drawingQuality>
+    <accept>Принять</accept>
+    <musicVolume>Громкость музыки:</musicVolume>
+    <effectsVolume>Громкость эффектов:</effectsVolume>
+    <nickname>Никнейм:</nickname>
+    <crosshairColor>Цвет прицела:</crosshairColor>
+    <mouseSensitivity>Чувствительность мыши</mouseSensitivity>
+    <create>Создать</create>
+    <connect>Подключиться</connect>
+    <low>Низкое</low>
+    <middle>Среднее</middle>
+    <high>Высокое</high>
+    <easy>Легко</easy>
+    <normal>Средне</normal>
+    <hard>Сложно</hard>
+    <red>Красный</red>
+    <green>Зелёный</green>
+    <blue>Синий</blue>
+    <lang>Язык:</lang>
+    <continue>Продолжить</continue>
+    <exitToMainMenu>Выйти в главное меню</exitToMainMenu>
+    <health>Здоровье:</health>
+    <armor>Броня:</armor>
+    <exp>Опыт:</exp>
+    <color>Цвет:</color>
+    <mouth>Рот:</mouth>
+    <eyes>Глаза:</eyes>
+  </language>
+</languages>
