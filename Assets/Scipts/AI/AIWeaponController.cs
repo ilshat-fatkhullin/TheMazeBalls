@@ -41,8 +41,8 @@ public class AIWeaponController : NetworkBehaviour {
             {
                 weapons[i].weapon.gameObject.SetActive(false);
             }
-            weapons[weaponIndex].weapon.gameObject.SetActive(true);
-            lastIndex = weaponIndex;
+            weapons[newWeaponIndex].weapon.gameObject.SetActive(true);
+            lastIndex = newWeaponIndex;
         }
     }
 }

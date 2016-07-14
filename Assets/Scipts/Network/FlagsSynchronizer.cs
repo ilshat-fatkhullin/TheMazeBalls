@@ -6,16 +6,12 @@ public class FlagsSynchronizer : NetworkBehaviour {
 
     public int flagIndex;
 
-	void Start () {
+    void Start()
+    {
         gameObject.GetComponent<MeshRenderer>().material.mainTexture = Resources.Load(@"Flags\" + flagIndex) as Texture;
-        if (isLocalPlayer)
-        {            
-            RpcSetFlagTexture(flagIndex);
-        }
-	}
+    }
 
-    [Command]
-    void CmdSetFlagTexture()
+    public void UpdateFlagTexture()
     {
         RpcSetFlagTexture(flagIndex);
     }
@@ -23,6 +19,7 @@ public class FlagsSynchronizer : NetworkBehaviour {
     [ClientRpc]
     void RpcSetFlagTexture(int newFlagIndex)
     {
+        flagIndex = newFlagIndex;
         gameObject.GetComponent<MeshRenderer>().material.mainTexture = Resources.Load(@"Flags\" + newFlagIndex) as Texture;
     }
 }

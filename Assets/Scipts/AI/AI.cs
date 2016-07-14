@@ -17,6 +17,7 @@ public class AI : NetworkBehaviour {
             _rigidbody = gameObject.GetComponent<Rigidbody>();
             mazeNavigator = gameObject.GetComponent<MazeNavigator>();
             weaponController = gameObject.GetComponent<AIWeaponController>();
+            gameObject.GetComponent<FlagsSynchronizer>().flagIndex = Random.Range(1, 196);
         }
     }
 

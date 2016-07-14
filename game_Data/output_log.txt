@@ -16,21 +16,21 @@ Platform assembly: D:\Ильшат\Geometric World\geometric world\game_Data\Man
 Loading D:\Ильшат\Geometric World\geometric world\game_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
 Platform assembly: D:\Ильшат\Geometric World\geometric world\game_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
 Loading D:\Ильшат\Geometric World\geometric world\game_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
-- Completed reload, in  0.052 seconds
+- Completed reload, in  0.098 seconds
 Platform assembly: D:\Ильшат\Geometric World\geometric world\game_Data\Managed\System.Core.dll (this message is harmless)
 Platform assembly: D:\Ильшат\Geometric World\geometric world\game_Data\Managed\System.dll (this message is harmless)
 desktop: 1360x768 60Hz; virtual: 1360x768 at 0,0
 <RI> Initializing input.
 <RI> Input initialized.
 <RI> Initialized touch support.
-UnloadTime: 0.537919 ms
+UnloadTime: 0.476325 ms
 Setting up 1 worker threads for Enlighten.
-  Thread -> id: 2b04 -> priority: 1 
+  Thread -> id: 17a4 -> priority: 1 
 Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 0.274434 ms
+UnloadTime: 0.262457 ms
 
-Unloading 9 unused Assets to reduce memory usage. Loaded Objects now: 407.
-Total: 0.233371 ms (FindLiveObjects: 0.010950 ms CreateObjectMapping: 0.019504 ms MarkObjects: 0.184781 ms  DeleteObjects: 0.017451 ms)
+Unloading 9 unused Assets to reduce memory usage. Loaded Objects now: 457.
+Total: 0.290517 ms (FindLiveObjects: 0.011976 ms CreateObjectMapping: 0.020873 ms MarkObjects: 0.238162 ms  DeleteObjects: 0.019162 ms)
 
 null texture passed to GUI.DrawTexture
  
@@ -184,23 +184,7 @@ null texture passed to GUI.DrawTexture
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
 
-stopping Flare(Clone)
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
-
-stopping Flare(Clone)
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
-
-stopping Flare(Clone)
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
-
-stopping Flare(Clone)
- 
-(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
-
-stopping Flare(Clone)
+null texture passed to GUI.DrawTexture
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
 

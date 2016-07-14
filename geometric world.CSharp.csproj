@@ -83,6 +83,7 @@
     <Compile Include="Assets\Scipts\Interface\Crosshair.cs" />
     <Compile Include="Assets\Scipts\Interface\Menu.cs" />
     <Compile Include="Assets\Scipts\Interface\UserInterface.cs" />
+    <Compile Include="Assets\Scipts\Network\FlagManager.cs" />
     <Compile Include="Assets\Scipts\Network\FlagsSynchronizer.cs" />
     <Compile Include="Assets\Scipts\Network\MapSynchronizer.cs" />
     <Compile Include="Assets\Scipts\Network\SelectionCamera.cs" />

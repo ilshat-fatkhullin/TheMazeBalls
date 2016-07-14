@@ -82,15 +82,17 @@ public class SelectionCamera : NetworkBehaviour {
         GameObject character = null;
         character = (GameObject)Instantiate(Resources.Load("Character"));
         character.GetComponent<MeshRenderer>().material.mainTexture = flags[index];
-        NetworkServer.Spawn(character);
-        NetworkServer.ReplacePlayerForConnection(connectionToClient, character, playerControllerId);
 
         Vector3 generatedPos = mapGenerator.GetRandomFloor(0);
         generatedPos = new Vector3(generatedPos.x * Map.ScaleXZ, generatedPos.y * Map.LevelHeight, generatedPos.z * Map.ScaleXZ);
-        generatedPos.y += 8F;
+        generatedPos.y += 5F;
         character.transform.position = generatedPos;
+
+        NetworkServer.Spawn(character);
+        NetworkServer.ReplacePlayerForConnection(connectionToClient, character, playerControllerId);
         character.GetComponent<SynchronizeManager>().RpcUpdatePos(generatedPos);
         character.GetComponent<FlagsSynchronizer>().flagIndex = index;
+        FlagManager.UpdateFlags();
         character.GetComponent<Respawner>().spawn = generatedPos;
 
         NetworkServer.Destroy(gameObject);
