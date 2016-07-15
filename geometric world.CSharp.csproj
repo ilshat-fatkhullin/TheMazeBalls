@@ -81,7 +81,10 @@
     <Compile Include="Assets\Scipts\Controllers\Weapon.cs" />
     <Compile Include="Assets\Scipts\Controllers\WeaponController.cs" />
     <Compile Include="Assets\Scipts\Interface\Crosshair.cs" />
+    <Compile Include="Assets\Scipts\Interface\DataManager.cs" />
     <Compile Include="Assets\Scipts\Interface\Menu.cs" />
+    <Compile Include="Assets\Scipts\Interface\PauseMenu.cs" />
+    <Compile Include="Assets\Scipts\Interface\PlayersTab.cs" />
     <Compile Include="Assets\Scipts\Interface\UserInterface.cs" />
     <Compile Include="Assets\Scipts\Network\FlagManager.cs" />
     <Compile Include="Assets\Scipts\Network\FlagsSynchronizer.cs" />

@@ -41,6 +41,12 @@ public class SelectionCamera : NetworkBehaviour {
         mapGenerator = GameObject.Find("SceneManager").GetComponent<MapGenerator>();
     }
 
+    void Update()
+    {
+        if (isLocalPlayer)
+            Cursor.visible = true;
+    }
+
 	void OnGUI () {
         if (isLocalPlayer)
         {
@@ -66,6 +72,7 @@ public class SelectionCamera : NetworkBehaviour {
 
             if (GUI.Button(playButton, "Играть"))
             {
+                Cursor.visible = false;
                 Play();
             }
         }

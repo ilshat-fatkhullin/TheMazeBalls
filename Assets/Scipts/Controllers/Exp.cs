@@ -5,6 +5,7 @@ using System;
 
 public class Exp : NetworkBehaviour {
     public int exp = 0;
+    public string nickname = "Player";
     int lastExp = 0;
     Rect expRect;
     GUIStyle guiStyle = new GUIStyle();
@@ -37,7 +38,13 @@ public class Exp : NetworkBehaviour {
         exp = newExp;
     }
 
-	void OnGUI () {
+    [ClientRpc]
+    void RpcUpdateNickname(string newNickname)
+    {
+        nickname = newNickname;
+    }
+
+    void OnGUI () {
         if (isLocalPlayer)
         GUI.Label(expRect, "Exp: " + exp, guiStyle);
 	}
