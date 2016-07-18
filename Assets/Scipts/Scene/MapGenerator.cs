@@ -9,7 +9,7 @@ public class MapGenerator : NetworkBehaviour {
 
     public Map map;
     GameObject[] ends;
-    int currentLevel = 1;
+    const int BonusesCount = Map.ScaleXZ / 4;
 
     void Start () {
         map = new Map();
@@ -109,6 +109,18 @@ public class MapGenerator : NetworkBehaviour {
         ReplaceEnds();
         MakeWholes();
         map.CreateMap();
+        MakeBonuses();
+    }
+
+    public void UpdateBonus(GameObject bonus)
+    {
+        NetworkServer.Destroy(bonus);
+
+        Vector3 bonusPos = GetRandomFloor(Convert.ToInt32(transform.position.y / Map.LevelHeight));
+        bonusPos = new Vector3(bonusPos.x * Map.ScaleXZ, bonusPos.y * Map.LevelHeight + Map.ScaleFloorY + 2.5F, bonusPos.z * Map.ScaleXZ);
+        GameObject newBonus = GameObject.Instantiate(Resources.Load("Bonus0")) as GameObject;
+        newBonus.transform.position = bonusPos;
+        NetworkServer.Spawn(newBonus);
     }
 
     public Vector3 GetRandomFloor(int level)
@@ -143,6 +155,19 @@ public class MapGenerator : NetworkBehaviour {
             Vector3 randomFloor = GetRandomFloor(l);
             map.map[Convert.ToInt32(randomFloor.x), Convert.ToInt32(randomFloor.y), Convert.ToInt32(randomFloor.z)] = Map.ElementType.Void;
         }
+    }
+
+    private void MakeBonuses()
+    {
+        for (int l = 0; l < Map.YDemension; l++)
+            for (int i = 0; i < BonusesCount; i++)
+            {
+                Vector3 bonusPos = GetRandomFloor(l);
+                bonusPos = new Vector3(bonusPos.x * Map.ScaleXZ, bonusPos.y * Map.LevelHeight + Map.ScaleFloorY + 2.5F, bonusPos.z * Map.ScaleXZ);
+                GameObject bonus = GameObject.Instantiate(Resources.Load("Bonus0")) as GameObject;
+                bonus.transform.position = bonusPos;
+                NetworkServer.Spawn(bonus);
+            }
     }
 
     private void ReplaceEnds()

@@ -4,7 +4,8 @@ using System.Collections;
 
 public class FireArm : Weapon {
 
-    const float FireDelay = 0.4F, Damage = 20;
+    const float FireDelay = 0.4F;
+    const int Damage = 20;
     public float Accuracy = 0;
     float lastShootTime;
     bool isAI;

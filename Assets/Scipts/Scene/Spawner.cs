@@ -27,44 +27,26 @@ public class Spawner : NetworkBehaviour {
 
     public Vector3 GenerateVoidPlace(int level)
     {
-        int x = UnityEngine.Random.Range(1, Map.XDemension - 1);
-        int z = UnityEngine.Random.Range(1, Map.ZDemension - 1);
-        if (map.map.map[x, level, z] != Map.ElementType.Floor)
-        {
-            if (x + 1 < Map.XDemension)
-                if (map.map.map[x + 1, level, z] == Map.ElementType.Floor)
-                {
-                    x = x + 1;
-                }
-            if (x - 1 >= 0)
-                if (map.map.map[x - 1, level, z] == Map.ElementType.Floor)
-                {
-                    x = x - 1;
-                }
-            if (z + 1 < Map.ZDemension)
-                if (map.map.map[x, level, z + 1] == Map.ElementType.Floor)
-                {
-                    z = z + 1;
-                }
-            if (z - 1 >= 0)
-                if (map.map.map[x, level, z - 1] == Map.ElementType.Floor)
-                {
-                    z = z - 1;
-                }
-        }
+        Vector3 mapPoint = map.GetRandomFloor(level);
+
+        int x = Convert.ToInt32(mapPoint.x);
+        int z = Convert.ToInt32(mapPoint.z);
 
         return new Vector3(x * Map.ScaleXZ, level * Map.LevelHeight + Map.ScaleFloorY + 2.5F, z * Map.ScaleXZ);
     }
 
 	public void SpawnAIs () {
         int level = 0;
+        float updateTime = Time.time;
         for (int i = 0; i < ais.GetLength(0); i++)
         {
             level = i / ((ais.GetLength(0) / 3));
             NetworkServer.Spawn(ais[i]);
             ais[i].GetComponent<Rigidbody>().velocity = Vector3.zero;
             ais[i].GetComponent<Respawner>().AILevel = level;
+            ais[i].GetComponent<AI>().lastUpdateTime = updateTime;
             ais[i].transform.position = GenerateVoidPlace(level);
+            updateTime += 1 / 60;
         }
     }
 }

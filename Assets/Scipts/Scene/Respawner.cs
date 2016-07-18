@@ -29,10 +29,10 @@ public class Respawner : NetworkBehaviour {
     {        
         if (!isAI)
         {
+            spawn = spawner.GenerateVoidPlace(0);
             synchronizeManager.RpcUpdatePos(spawn);
-            gameObject.GetComponent<Health>().HP = gameObject.GetComponent<Health>().MAXHP;
-            gameObject.GetComponent<Health>().ARMOR = gameObject.GetComponent<Health>().MAXARMOR;
-            gameObject.GetComponent<Health>().RpcUpdateVars(gameObject.GetComponent<Health>().HP, gameObject.GetComponent<Health>().ARMOR);
+            gameObject.GetComponent<Health>().HP = Health.MAXHP;
+            gameObject.GetComponent<Health>().ARMOR = Health.MAXARMOR;
             if (gameObject.GetComponent<Exp>() != null)
             {
                 gameObject.GetComponent<Exp>().exp -= 50;

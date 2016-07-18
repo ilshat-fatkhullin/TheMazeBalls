@@ -4,9 +4,11 @@ using System.Collections;
 
 public class SteelArm : Weapon {
 
+    const float punchStartDelay = 0.2F, punchEndDelay = 0.4F;
+    const int damage = 20;
+    float punchPeriodStartTime;
     enum PunchStatus { Start, End };
     PunchStatus punchStatus;
-    float punchStartDelay = 0.2F, punchEndDelay = 0.4F, punchPeriodStartTime, damage = 20;
     int enemiesLayer = 1 << 8;
     Quaternion normalRotation, punchRotation, blockRotation;
     NetworkIdentity parentIdentity;

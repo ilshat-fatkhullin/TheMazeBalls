@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class UserInterface : MonoBehaviour {
 
@@ -9,6 +10,43 @@ public class UserInterface : MonoBehaviour {
     public bool Num;
     public bool Tab;
     public bool Controllable = true;
+    public Exp[] exps;
+    Rect[] nicknamesRect = new Rect[8];
+    Rect[] expsRect = new Rect[8];
+    GUIStyle guiStyle = new GUIStyle();
+    Rect expRect, hpRect, armorRect;
+    public int hp, armor, exp;
+
+    void Start()
+    {
+        float pixel = Screen.height / 20;
+        expRect = new Rect(pixel, pixel, pixel * 4, pixel);
+        armorRect = new Rect(pixel, Screen.height - pixel * 4, pixel * 4, pixel);
+        hpRect = new Rect(pixel, Screen.height - pixel * 2, pixel * 4, pixel);
+        guiStyle.fontSize = Convert.ToInt32(pixel);
+        guiStyle.normal.textColor = Color.white;
+
+        for (int i = 0; i < nicknamesRect.GetLength(0); i++)
+        {
+            nicknamesRect[i] = new Rect(Screen.width - pixel * 5, pixel + pixel * i, pixel * 3, pixel);
+            expsRect[i] = new Rect(Screen.width - pixel * 2, pixel + pixel * i, pixel * 2, pixel);
+        }
+    }
+
+    void OnGUI()
+    {
+        GUI.Label(expRect, "EXP: " + exp, guiStyle);
+        GUI.Label(hpRect, "HP: " + hp, guiStyle);
+        GUI.Label(armorRect, "ARMOR: " + armor, guiStyle);
+
+        if (Tab)
+        if (exps != null)
+            for (int i = 0; i < exps.GetLength(0) && i < nicknamesRect.GetLength(0); i++)
+            {
+                GUI.Label(nicknamesRect[i], exps[i].nickname, guiStyle);
+                GUI.Label(expsRect[i], Convert.ToString(exps[i].exp), guiStyle);
+            }
+    }
 
     void Update () {
         Num = false;

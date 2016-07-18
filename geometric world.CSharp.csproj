@@ -72,7 +72,9 @@
     <Compile Include="Assets\Scipts\AI\AI.cs" />
     <Compile Include="Assets\Scipts\AI\AIWeaponController.cs" />
     <Compile Include="Assets\Scipts\AI\MazeNavigator.cs" />
+    <Compile Include="Assets\Scipts\Controllers\BonusController.cs" />
     <Compile Include="Assets\Scipts\Controllers\CameraController.cs" />
+    <Compile Include="Assets\Scipts\Controllers\Distributor.cs" />
     <Compile Include="Assets\Scipts\Controllers\Exp.cs" />
     <Compile Include="Assets\Scipts\Controllers\FireArm.cs" />
     <Compile Include="Assets\Scipts\Controllers\Health.cs" />

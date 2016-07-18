@@ -43,17 +43,17 @@ public class Map {
         switch (map[i, j, k])
         {
             case ElementType.Floor:
-                mapObjects[i, j, k] = GameObject.Instantiate(Resources.Load("Floor")) as GameObject;
+                mapObjects[i, j, k] = GameObject.Instantiate(Resources.Load("Floor" + j)) as GameObject;
                 break;
             case ElementType.Wall:
-                mapObjects[i, j, k] = GameObject.Instantiate(Resources.Load("Wall")) as GameObject;
+                mapObjects[i, j, k] = GameObject.Instantiate(Resources.Load("Wall" + j)) as GameObject;
                 sizeY = LevelHeight;
                 break;
             case ElementType.Start:
-                mapObjects[i, j, k] = GameObject.Instantiate(Resources.Load("Floor")) as GameObject;
+                mapObjects[i, j, k] = GameObject.Instantiate(Resources.Load("Floor" + j)) as GameObject;
                 break;
             case ElementType.End:
-                mapObjects[i, j, k] = GameObject.Instantiate(Resources.Load("Floor")) as GameObject;
+                mapObjects[i, j, k] = GameObject.Instantiate(Resources.Load("Floor" + j)) as GameObject;
                 break;
         }
 

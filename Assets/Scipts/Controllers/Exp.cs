@@ -4,43 +4,23 @@ using System.Collections;
 using System;
 
 public class Exp : NetworkBehaviour {
+    [SyncVar]
     public int exp = 0;
+    [SyncVar]
     public string nickname = "Player";
     int lastExp = 0;
-    Rect expRect;
-    GUIStyle guiStyle = new GUIStyle();
+    UserInterface userInterface;
 
-	void Start () {
-        if (isLocalPlayer)
-        {
-            float pixel = Screen.height / 20;
-            expRect = new Rect(pixel, pixel, pixel * 4, pixel);
-            guiStyle.fontSize = Convert.ToInt32(pixel);
-            guiStyle.normal.textColor = Color.white;
-        }
-    }
-
-    void Update()
+    void Start()
     {
-        if (isServer && !isLocalPlayer)
+        userInterface = GameObject.Find("UserInterface").GetComponent<UserInterface>();
+    }
+
+    void Update() {
+        if (isLocalPlayer && lastExp != exp)
         {
-            if (lastExp != exp)
-            {
-                lastExp = exp;
-                RpcUpdateExp(exp);
-            }
+            lastExp = exp;
+            userInterface.exp = exp;
         }
-    }
-
-    [ClientRpc(channel = 0)]
-    void RpcUpdateExp(int newExp)
-    {
-        if (isLocalPlayer)
-            exp = newExp;
-    }
-
-    void OnGUI () {
-        if (isLocalPlayer)
-        GUI.Label(expRect, "Exp: " + exp, guiStyle);
 	}
 }

@@ -4,28 +4,34 @@ using System.Collections;
 using System;
 
 public class Health : NetworkBehaviour {
-
-    public float HP = 100, ARMOR = 100, MAXHP = 100, MAXARMOR = 100;
+    [SyncVar]
+    public int HP = 100, ARMOR = 100;
+    public const int MAXHP = 100, MAXARMOR = 100;
     public bool Block = false;
     MonoBehaviour[] scripts;
     MonoBehaviour[] child_scripts;
     Rigidbody _rigidbody;
-    Rect hp, armor;
     Transform killer;
+    UserInterface userInterface;
 
 	void Start () {
         scripts = gameObject.GetComponents<MonoBehaviour>();
         child_scripts = gameObject.GetComponentsInChildren<MonoBehaviour>();
         _rigidbody = gameObject.GetComponent<Rigidbody>();
 
-        float pixel = Screen.height / 20;
-        hp = new Rect(pixel, Screen.height - pixel * 4, pixel * 4, pixel);
-        armor = new Rect(pixel, Screen.height - pixel * 2, pixel * 4, pixel);
-        guiStyle.fontSize = Convert.ToInt32(pixel);
-        guiStyle.normal.textColor = Color.white;
+        userInterface = GameObject.Find("UserInterface").GetComponent<UserInterface>();
     }
 
-    public void Damage(float damage, Vector3 pos, Transform newKiller)
+    void Update()
+    {
+        if (isLocalPlayer)
+        {
+            userInterface.hp = HP;
+            userInterface.armor = ARMOR;
+        }
+    }
+
+    public void Damage(int damage, Vector3 pos, Transform newKiller)
     {
         if (!isServer)
         {
@@ -57,21 +63,7 @@ public class Health : NetworkBehaviour {
         if (HP == 0)
         {
             Death();
-        }
-
-        RpcUpdateVars(HP, ARMOR);
-    }
-
-    private GUIStyle guiStyle = new GUIStyle();
-
-    void OnGUI()
-    {
-        if (isLocalPlayer)
-        {
-            GUI.contentColor = Color.white;
-            GUI.Label(hp, "HP: " + Convert.ToInt32(HP), guiStyle);
-            GUI.Label(armor, "ARMOR: " + Convert.ToInt32(ARMOR), guiStyle);
-        }
+        }        
     }
 
     void Death()
@@ -91,17 +83,7 @@ public class Health : NetworkBehaviour {
         gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
     }
 
-    [ClientRpc(channel = 0)]
-    public void RpcUpdateVars(float in_hp, float in_armor)
-    {
-        if (!isServer)
-        {
-            HP = in_hp;
-            ARMOR = in_armor;
-        }
-    }
-
-    public void Punch(float damage, Vector3 pos, Transform newKiller)
+    public void Punch(int damage, Vector3 pos, Transform newKiller)
     {
         if (!Block)
             Damage(damage, pos, newKiller);

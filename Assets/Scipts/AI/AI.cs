@@ -4,12 +4,11 @@ using System.Collections;
 
 public class AI : NetworkBehaviour {
     MazeNavigator mazeNavigator;
-    int enemiesLayer = (1 << 8);
-    float punchDistance = 6, fireDistance = 50, speed = 60, detectionRadius = 50, maxSpeed = 20;
+    float punchDistance = 6, fireDistance = 50, speed = 60, maxSpeed = 20;
     Rigidbody _rigidbody;
-    Transform enemie;
+    public Transform enemie;
     AIWeaponController weaponController;
-    const float Delay = 1;
+    const float Delay = 1.5F;
 
 	void Start () {
         if (isServer)
@@ -35,7 +34,8 @@ public class AI : NetworkBehaviour {
         }
     }
 
-    float lastUpdateTime = 0;
+    public float lastUpdateTime = 0;
+
     void Update()
     {
         if (isServer)
@@ -43,7 +43,7 @@ public class AI : NetworkBehaviour {
             if (Time.time - lastUpdateTime > Delay)
             {
                 lastUpdateTime = Time.time;
-                TestEnemie();
+                enemie = null;
             }
             if (enemie != null)
             {
@@ -82,21 +82,5 @@ public class AI : NetworkBehaviour {
         weaponController.weaponIndex = 0;
         weaponController.isEnabled = true;
         weaponController.isBlock = false;
-    }
-
-    void TestEnemie()
-    {
-        Collider[] enemies = Physics.OverlapSphere(transform.position, detectionRadius, enemiesLayer);
-
-        foreach (Collider e in enemies)
-        {
-            if (e.tag == "Player")
-            {
-                if (!Physics.Linecast(transform.position, e.transform.position, ~enemiesLayer))
-                {
-                    enemie = e.transform;
-                }
-            }
-        }
     }
 }
