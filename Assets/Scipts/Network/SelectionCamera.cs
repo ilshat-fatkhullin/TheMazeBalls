@@ -80,11 +80,11 @@ public class SelectionCamera : NetworkBehaviour {
 
     void Play()
     {
-        CmdSpawn(currentFlagIndex);
+        CmdSpawn(currentFlagIndex, DataManager.LoadVars().nickname);
     }
 
     [Command(channel = 0)]
-    void CmdSpawn(int index)
+    void CmdSpawn(int index, string nickname)
     {
         GameObject character = null;
         character = (GameObject)Instantiate(Resources.Load("Character"));
@@ -94,13 +94,14 @@ public class SelectionCamera : NetworkBehaviour {
         generatedPos = new Vector3(generatedPos.x * Map.ScaleXZ, generatedPos.y * Map.LevelHeight, generatedPos.z * Map.ScaleXZ);
         generatedPos.y += 5F;
         character.transform.position = generatedPos;
-
         NetworkServer.Spawn(character);
         NetworkServer.ReplacePlayerForConnection(connectionToClient, character, playerControllerId);
         character.GetComponent<SynchronizeManager>().RpcUpdatePos(generatedPos);
         character.GetComponent<FlagsSynchronizer>().flagIndex = index;
         FlagManager.UpdateFlags();
         character.GetComponent<Respawner>().spawn = generatedPos;
+        if (nickname != null)
+        character.GetComponent<Exp>().nickname = nickname;
 
         NetworkServer.Destroy(gameObject);
     }

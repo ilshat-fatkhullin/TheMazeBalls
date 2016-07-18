@@ -15,7 +15,6 @@ public class FireArm : Weapon {
         isFireArm = true;
         isAI = gameObject.tag == "AI";
         source = gameObject.GetComponentInChildren<AudioSource>();
-        weapon = source.gameObject.transform;
         coll = gameObject.GetComponent<SphereCollider>();
     }
 

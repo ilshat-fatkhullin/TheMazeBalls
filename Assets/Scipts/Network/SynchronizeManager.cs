@@ -41,46 +41,46 @@ public class SynchronizeManager : NetworkBehaviour
         }
     }
 
-    [Command]
-    public void CmdUpdatePosDamp(Vector3 pos)
+    [Command(channel = 0)]
+    public void CmdUpdatePosDamp(float x, float y, float z)
     {
         if (isServer)
         {
-            currentPos = pos;
-            RpcUpdatePosDamp(pos);
+            currentPos = new Vector3(x, y, z);
+            RpcUpdatePosDamp(x, y, z);
         }
     }
 
-    [Command]
-    public void CmdUpdateRotationDamp(Quaternion rotation)
+    [Command(channel = 0)]
+    public void CmdUpdateRotationDamp(float w, float x, float y, float z)
     {
         if (isServer)
         {
-            currentRot = rotation;
-            RpcUpdateRotationDamp(rotation);
+            currentRot = new Quaternion(x, y, z, w);
+            RpcUpdateRotationDamp(w, x, y, z);
         }
     }
 
-    [ClientRpc]
-    public void RpcUpdatePosDamp(Vector3 pos)
+    [ClientRpc(channel = 0)]
+    public void RpcUpdatePosDamp(float x, float y, float z)
     {
         if (!isLocalPlayer && isClient && !isServer)
         {
             if (_rigidbody != null)
-                currentPos = pos;
+                currentPos = new Vector3(x, y, z);
         }
     }
 
-    [ClientRpc]
-    public void RpcUpdateRotationDamp(Quaternion rotation)
+    [ClientRpc(channel = 0)]
+    public void RpcUpdateRotationDamp(float w, float x, float y, float z)
     {
         if (!isLocalPlayer && isClient && !isServer)
         {
-            currentRot = rotation;
+            currentRot = new Quaternion(x, y, z, w);
         }
     }
 
-    [ClientRpc]
+    [ClientRpc(channel = 0)]
     public void RpcUpdatePos(Vector3 pos)
     {
         if (isLocalPlayer)
@@ -90,7 +90,7 @@ public class SynchronizeManager : NetworkBehaviour
         }
     }
 
-    [ClientRpc]
+    [ClientRpc(channel = 0)]
     public void RpcAddForce(Vector3 force)
     {
         if (isLocalPlayer)
@@ -99,7 +99,7 @@ public class SynchronizeManager : NetworkBehaviour
         }
     }
 
-    void FixedUpdate()
+    void BlaBla()
     {
         if (!isAI)
         {
@@ -107,13 +107,13 @@ public class SynchronizeManager : NetworkBehaviour
             {
                 if (isServer)
                 {
-                    RpcUpdatePosDamp(_rigidbody.position);
-                    RpcUpdateRotationDamp(transform.rotation);
+                    RpcUpdatePosDamp(_rigidbody.position.x, _rigidbody.position.y, _rigidbody.position.z);
+                    RpcUpdateRotationDamp(transform.rotation.w, transform.rotation.x, transform.rotation.y, transform.rotation.z);
                 }
                 else
                 {
-                    CmdUpdatePosDamp(_rigidbody.position);
-                    CmdUpdateRotationDamp(transform.rotation);
+                    CmdUpdatePosDamp(_rigidbody.position.x, _rigidbody.position.y, _rigidbody.position.z);
+                    CmdUpdateRotationDamp(transform.rotation.w, transform.rotation.x, transform.rotation.y, transform.rotation.z);
                 }
             }
             else
@@ -128,8 +128,8 @@ public class SynchronizeManager : NetworkBehaviour
         {
             if (isServer)
             {
-                RpcUpdatePosDamp(_rigidbody.position);
-                RpcUpdateRotationDamp(transform.rotation);
+                RpcUpdatePosDamp(_rigidbody.position.x, _rigidbody.position.y, _rigidbody.position.z);
+                RpcUpdateRotationDamp(transform.rotation.w, transform.rotation.x, transform.rotation.y, transform.rotation.z);
             }
             else
             {

@@ -13,7 +13,7 @@ public class Menu : MonoBehaviour {
     enum MenuStatus { General, SinglePlayer, Server, Client, MultiPlayer, Options }
     MenuStatus menuStatus = MenuStatus.General;
 
-    Rect[] buttons = new Rect[8];
+    Rect[] buttons = new Rect[12];
     Rect backgroundRect;
     Rect menuBackgroundRect;
 
@@ -24,6 +24,8 @@ public class Menu : MonoBehaviour {
     int l_quality = 1;
     float l_musicLevel = 1;
     float l_effectsLevel = 1;
+    string l_nickname;
+    string nickname = "Player";
     string[] difficultSelection;
     string[] qualitySelection;
     string host = "localhost";
@@ -37,7 +39,7 @@ public class Menu : MonoBehaviour {
 
         for (int i = 0; i < buttons.GetLength(0); i++)
         {
-            buttons[i] = new Rect(pixel, pixel * i + pixel, pixel * 4, pixel / 1.2F);
+            buttons[i] = new Rect(pixel, pixel * i + pixel / 3, pixel * 4, pixel / 1.5F);
         }
 
         difficultSelection = new string[] { "Легко", "Средне", "Сложно" };
@@ -49,9 +51,13 @@ public class Menu : MonoBehaviour {
         musicLevel = settingsStruct.musicLevel;
         effectsLevel = settingsStruct.effectsLevel;
         quality = settingsStruct.qualityLevel;
+        nickname = settingsStruct.nickname;
         l_musicLevel = musicLevel;
         l_effectsLevel = effectsLevel;
         l_quality = quality;
+        if (nickname == null)
+            nickname = "Player";
+        l_nickname = nickname;
     }
 	
 	void OnGUI () {
@@ -110,19 +116,23 @@ public class Menu : MonoBehaviour {
                 l_musicLevel = GUI.HorizontalSlider(buttons[3], l_musicLevel, 0, 1);
                 GUI.Label(buttons[4], "Громкость эффектов:");
                 l_effectsLevel = GUI.HorizontalSlider(buttons[5], l_effectsLevel, 0, 1);
-                if (GUI.Button(buttons[6], "Принять"))
+                GUI.Label(buttons[6], "Никнейм:");
+                l_nickname = GUI.TextField(buttons[7], l_nickname);
+                if (GUI.Button(buttons[8], "Принять"))
                 {
                     quality = l_quality;
                     musicLevel = l_musicLevel;
                     effectsLevel = l_effectsLevel;
-                    DataManager.SaveVars(musicLevel, effectsLevel, quality);
+                    nickname = l_nickname;
+                    DataManager.SaveVars(musicLevel, effectsLevel, quality, nickname);
                     menuStatus = MenuStatus.General;
                 }
-                if (GUI.Button(buttons[7], "Назад"))
+                if (GUI.Button(buttons[9], "Назад"))
                 {
                     l_quality = quality;
                     l_musicLevel = musicLevel;
                     l_effectsLevel = effectsLevel;
+                    l_nickname = nickname;
                     menuStatus = MenuStatus.General;
                 }
                 break;

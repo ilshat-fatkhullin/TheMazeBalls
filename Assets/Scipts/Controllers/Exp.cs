@@ -22,7 +22,7 @@ public class Exp : NetworkBehaviour {
 
     void Update()
     {
-        if (isServer)
+        if (isServer && !isLocalPlayer)
         {
             if (lastExp != exp)
             {
@@ -32,16 +32,11 @@ public class Exp : NetworkBehaviour {
         }
     }
 
-    [ClientRpc]
+    [ClientRpc(channel = 0)]
     void RpcUpdateExp(int newExp)
     {
-        exp = newExp;
-    }
-
-    [ClientRpc]
-    void RpcUpdateNickname(string newNickname)
-    {
-        nickname = newNickname;
+        if (isLocalPlayer)
+            exp = newExp;
     }
 
     void OnGUI () {

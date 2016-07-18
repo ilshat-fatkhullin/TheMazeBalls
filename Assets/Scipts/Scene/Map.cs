@@ -4,8 +4,8 @@ using System.Collections.Generic;
 
 public class Map {
     //Хранение размеров карты и её создание из трёхмерного массива
-    public const int XDemension = 10, YDemension = 3, ZDemension = 10,
-                     ScaleXZ = 20, ScaleFloorY = 5, LevelHeight = 30;
+    public const int XDemension = 11, YDemension = 3, ZDemension = 11,
+                     ScaleXZ = 20, ScaleFloorY = 5, LevelHeight = 30, WholesCount = 1;
     public enum ElementType { Void, Floor, Wall, Start, End};
     public ElementType[,,]  map = new ElementType[XDemension, YDemension, ZDemension];
     GameObject[,,] mapObjects = new GameObject[XDemension, YDemension, ZDemension];
@@ -47,7 +47,7 @@ public class Map {
                 break;
             case ElementType.Wall:
                 mapObjects[i, j, k] = GameObject.Instantiate(Resources.Load("Wall")) as GameObject;
-                sizeY = LevelHeight - 2;
+                sizeY = LevelHeight;
                 break;
             case ElementType.Start:
                 mapObjects[i, j, k] = GameObject.Instantiate(Resources.Load("Floor")) as GameObject;

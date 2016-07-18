@@ -6,7 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 public class DataManager {
 
-    public static void SaveVars(float in_musicLevel, float in_effectsLevel, int in_qualityLevel)
+    public static void SaveVars(float in_musicLevel, float in_effectsLevel, int in_qualityLevel, string nickname)
     {
         BinaryFormatter bf = new BinaryFormatter();
         FileStream file = new FileStream(Application.persistentDataPath + "/settings.dat", FileMode.OpenOrCreate);
@@ -15,6 +15,7 @@ public class DataManager {
         settingsStruct.qualityLevel = in_qualityLevel;
         settingsStruct.musicLevel = in_musicLevel;
         settingsStruct.effectsLevel = in_effectsLevel;
+        settingsStruct.nickname = nickname;
 
         bf.Serialize(file, settingsStruct);
         file.Close();
@@ -36,6 +37,7 @@ public class DataManager {
             settingsStruct.effectsLevel = 1;
             settingsStruct.musicLevel = 1;
             settingsStruct.qualityLevel = 1;
+            settingsStruct.nickname = "Player";
             return settingsStruct;
         }
     }
@@ -47,4 +49,5 @@ public class Settings
     public int qualityLevel;
     public float musicLevel;
     public float effectsLevel;
+    public string nickname;
 }

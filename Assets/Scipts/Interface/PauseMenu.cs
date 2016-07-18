@@ -18,6 +18,7 @@ public class PauseMenu : MonoBehaviour {
     float l_musicLevel, l_effectsLevel;
     int quality;
     float musicLevel = 1, effectsLevel = 1;
+    string nickname;
     public Texture menuBackground;
     NetworkManager networkManager;
 
@@ -95,7 +96,7 @@ public class PauseMenu : MonoBehaviour {
                         quality = l_quality;
                         musicLevel = l_musicLevel;
                         effectsLevel = l_effectsLevel;
-                        DataManager.SaveVars(musicLevel, effectsLevel, quality);
+                        DataManager.SaveVars(musicLevel, effectsLevel, quality, nickname);
                         menuStatus = MenuStatus.General;
                         SetQuality();
                     }

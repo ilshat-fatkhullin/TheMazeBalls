@@ -59,7 +59,7 @@ public class AI : NetworkBehaviour {
                 }
                 else
                 {
-                    weaponController.isActive = false;
+                    weaponController.isEnabled = false;
                     weaponController.isBlock = false;
                 }
             }
@@ -73,14 +73,14 @@ public class AI : NetworkBehaviour {
     void Punch()
     {
         weaponController.weaponIndex = 1;
-        weaponController.isActive = true;
+        weaponController.isEnabled = true;
         weaponController.isBlock = false;
     }
 
     void Fire()
     {
         weaponController.weaponIndex = 0;
-        weaponController.isActive = true;
+        weaponController.isEnabled = true;
         weaponController.isBlock = false;
     }
 

@@ -34,11 +34,11 @@ public class Health : NetworkBehaviour {
 
         if (!(gameObject.tag == "AI"))
         {
-            gameObject.GetComponent<SynchronizeManager>().RpcAddForce(((transform.position - pos).normalized + Vector3.up) * 30);
+            gameObject.GetComponent<SynchronizeManager>().RpcAddForce((((transform.position - pos).normalized * 3) + Vector3.up * 0.5F) * 60);
         }
         else
         {
-            _rigidbody.AddForce(((transform.position - pos).normalized + Vector3.up) * 30, ForceMode.Impulse);
+            _rigidbody.AddForce((((transform.position - pos).normalized * 3) + Vector3.up * 0.5F) * 60, ForceMode.Impulse);
         }
 
         killer = newKiller;
@@ -82,14 +82,6 @@ public class Health : NetworkBehaviour {
                 killer.GetComponent<Exp>().exp += 100;
         }
 
-        if (gameObject.tag == "Player")
-        {
-            gameObject.GetComponent<Exp>().exp -= 100;
-            if (gameObject.GetComponent<Exp>().exp < 0)
-            {
-                gameObject.GetComponent<Exp>().exp = 0;
-            }
-        }
         GameObject bang = GameObject.Instantiate(Resources.Load("Explosion")) as GameObject;
         bang.transform.position = transform.position;
         NetworkServer.Spawn(bang);
@@ -99,7 +91,7 @@ public class Health : NetworkBehaviour {
         gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
     }
 
-    [ClientRpc]
+    [ClientRpc(channel = 0)]
     public void RpcUpdateVars(float in_hp, float in_armor)
     {
         if (!isServer)
