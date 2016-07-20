@@ -6,7 +6,7 @@ using System;
 public class Spawner : NetworkBehaviour {
 
     MapGenerator map;
-    int aiCount = 3;
+    int aiCount = 18;
     GameObject[] ais;
     bool set = true;
 
@@ -38,6 +38,7 @@ public class Spawner : NetworkBehaviour {
 	public void SpawnAIs () {
         int level = 0;
         float updateTime = Time.time;
+        float fUpdateTime = Time.time;
         for (int i = 0; i < ais.GetLength(0); i++)
         {
             level = i / ((ais.GetLength(0) / 3));
@@ -45,8 +46,10 @@ public class Spawner : NetworkBehaviour {
             ais[i].GetComponent<Rigidbody>().velocity = Vector3.zero;
             ais[i].GetComponent<Respawner>().AILevel = level;
             ais[i].GetComponent<AI>().lastUpdateTime = updateTime;
+            ais[i].GetComponent<AIFlashlightController>().delayTime = fUpdateTime;
             ais[i].transform.position = GenerateVoidPlace(level);
             updateTime += 1 / 60;
+            fUpdateTime += 5;
         }
     }
 }

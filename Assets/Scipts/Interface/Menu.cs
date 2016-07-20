@@ -10,7 +10,7 @@ public class Menu : MonoBehaviour {
 
     NetworkManager networkManager;
 
-    enum MenuStatus { General, SinglePlayer, Server, Client, MultiPlayer, Options }
+    enum MenuStatus { General, SinglePlayer, Server, Client, MultiPlayer, Options, Sound, Graphics, Gameplay }
     MenuStatus menuStatus = MenuStatus.General;
 
     Rect[] buttons = new Rect[12];
@@ -19,16 +19,22 @@ public class Menu : MonoBehaviour {
 
     int difficult = 1;
     int quality = 1;
+    int crosshair = 0;
     float musicLevel = 1;
     float effectsLevel = 1;
+    float sensetive = 1;
     int l_quality = 1;
+    int l_crosshair = 0;
     float l_musicLevel = 1;
     float l_effectsLevel = 1;
+    float l_sensetive = 1;
     string l_nickname;
     string nickname = "Player";
     string[] difficultSelection;
     string[] qualitySelection;
+    string[] colorSelection;
     string host = "localhost";
+    bool isDarkness;
 
     void Start () {
         backgroundRect = new Rect(0, 0, Screen.width, Screen.height);
@@ -44,6 +50,7 @@ public class Menu : MonoBehaviour {
 
         difficultSelection = new string[] { "Легко", "Средне", "Сложно" };
         qualitySelection = new string[] { "Низкое", "Среднее", "Высокое" };
+        colorSelection = new string[] { "Красный", "Зелёный", "Синий" };
 
         networkManager = GameObject.Find("NetworkManager").GetComponent<NetworkManager>();
 
@@ -52,9 +59,13 @@ public class Menu : MonoBehaviour {
         effectsLevel = settingsStruct.effectsLevel;
         quality = settingsStruct.qualityLevel;
         nickname = settingsStruct.nickname;
+        crosshair = settingsStruct.crosshair;
+        sensetive = settingsStruct.mouseSensetive;
         l_musicLevel = musicLevel;
         l_effectsLevel = effectsLevel;
         l_quality = quality;
+        l_sensetive = sensetive;
+        l_crosshair = crosshair;
         if (nickname == null)
             nickname = "Player";
         l_nickname = nickname;
@@ -86,11 +97,13 @@ public class Menu : MonoBehaviour {
             case MenuStatus.SinglePlayer:
                 GUI.Label(buttons[0], "Сложность:");
                 difficult = GUI.SelectionGrid(buttons[1], difficult, difficultSelection, 3);
-                if (GUI.Button(buttons[2], "Играть"))
+                isDarkness = GUI.Toggle(buttons[2], isDarkness, "Мрак");
+                if (GUI.Button(buttons[3], "Играть"))
                 {
+                    DataManager.SaveBool(isDarkness);
                     networkManager.StartHost();
                 }
-                if (GUI.Button(buttons[3], "Назад"))
+                if (GUI.Button(buttons[4], "Назад"))
                 {
                     menuStatus = MenuStatus.General;
                 }
@@ -110,40 +123,77 @@ public class Menu : MonoBehaviour {
                 }
                 break;
             case MenuStatus.Options:
+                if (GUI.Button(buttons[0], "Графика"))
+                {
+                    menuStatus = MenuStatus.Graphics;
+                }
+                if (GUI.Button(buttons[1], "Звук"))
+                {
+                    menuStatus = MenuStatus.Sound;
+                }
+                if (GUI.Button(buttons[2], "Игра"))
+                {
+                    menuStatus = MenuStatus.Gameplay;
+                }
+                if (GUI.Button(buttons[3], "Назад"))
+                {
+                    menuStatus = MenuStatus.General;
+                }               
+                break;
+            case MenuStatus.Graphics:
                 GUI.Label(buttons[0], "Качество графики:");
                 l_quality = GUI.SelectionGrid(buttons[1], l_quality, qualitySelection, 3);
-                GUI.Label(buttons[2], "Громкость музыки:");
-                l_musicLevel = GUI.HorizontalSlider(buttons[3], l_musicLevel, 0, 1);
-                GUI.Label(buttons[4], "Громкость эффектов:");
-                l_effectsLevel = GUI.HorizontalSlider(buttons[5], l_effectsLevel, 0, 1);
-                GUI.Label(buttons[6], "Никнейм:");
-                l_nickname = GUI.TextField(buttons[7], l_nickname);
-                if (GUI.Button(buttons[8], "Принять"))
+                if (GUI.Button(buttons[2], "Принять"))
                 {
-                    quality = l_quality;
-                    musicLevel = l_musicLevel;
-                    effectsLevel = l_effectsLevel;
-                    nickname = l_nickname;
-                    DataManager.SaveVars(musicLevel, effectsLevel, quality, nickname);
-                    menuStatus = MenuStatus.General;
+                    Submit();
                 }
-                if (GUI.Button(buttons[9], "Назад"))
+                if (GUI.Button(buttons[3], "Назад"))
                 {
-                    l_quality = quality;
-                    l_musicLevel = musicLevel;
-                    l_effectsLevel = effectsLevel;
-                    l_nickname = nickname;
-                    menuStatus = MenuStatus.General;
+                    Back();
+                }
+                break;
+            case MenuStatus.Sound:
+                GUI.Label(buttons[0], "Громкость музыки:");
+                l_musicLevel = GUI.HorizontalSlider(buttons[1], l_musicLevel, 0, 1);
+                GUI.Label(buttons[2], "Громкость эффектов:");
+                l_effectsLevel = GUI.HorizontalSlider(buttons[3], l_effectsLevel, 0, 1);
+                if (GUI.Button(buttons[4], "Принять"))
+                {
+                    Submit();
+                }
+                if (GUI.Button(buttons[5], "Назад"))
+                {
+                    Back();
+                }
+                break;
+            case MenuStatus.Gameplay:
+                GUI.Label(buttons[0], "Никнейм:");
+                l_nickname = GUI.TextField(buttons[1], l_nickname);
+                if (l_nickname.Length > 15)
+                    l_nickname = l_nickname.Substring(0, 15);
+                GUI.Label(buttons[2], "Цвет прицела:");
+                l_crosshair = GUI.SelectionGrid(buttons[3], l_crosshair, colorSelection, 3);
+                GUI.Label(buttons[4], "Чувствительность мыши:");
+                l_sensetive = GUI.HorizontalSlider(buttons[5], l_sensetive, 0, 2);
+                if (GUI.Button(buttons[6], "Принять"))
+                {
+                    Submit();
+                }
+                if (GUI.Button(buttons[7], "Назад"))
+                {
+                    Back();
                 }
                 break;
             case MenuStatus.Server:
                 GUI.Label(buttons[0], "Сложность:");
                 difficult = GUI.SelectionGrid(buttons[1], difficult, difficultSelection, 3);
-                if (GUI.Button(buttons[2], "Создать"))
+                isDarkness = GUI.Toggle(buttons[2], isDarkness, "Мрак");
+                if (GUI.Button(buttons[3], "Создать"))
                 {
+                    DataManager.SaveBool(isDarkness);
                     networkManager.StartHost();
                 }
-                if (GUI.Button(buttons[3], "Назад"))
+                if (GUI.Button(buttons[4], "Назад"))
                 {
                     menuStatus = MenuStatus.General;
                 }
@@ -162,6 +212,29 @@ public class Menu : MonoBehaviour {
                 break;
         }
 	}
+
+    void Back()
+    {
+        l_quality = quality;
+        l_musicLevel = musicLevel;
+        l_effectsLevel = effectsLevel;
+        l_sensetive = sensetive;
+        l_crosshair = crosshair;
+        l_nickname = nickname;
+        menuStatus = MenuStatus.Options;
+    }
+
+    void Submit()
+    {
+        quality = l_quality;
+        musicLevel = l_musicLevel;
+        effectsLevel = l_effectsLevel;
+        sensetive = l_sensetive;
+        crosshair = l_crosshair;
+        nickname = l_nickname;
+        DataManager.SaveVars(musicLevel, effectsLevel, sensetive, quality, crosshair, nickname);
+        menuStatus = MenuStatus.Options;
+    }
 
     void OnServerError()
     {

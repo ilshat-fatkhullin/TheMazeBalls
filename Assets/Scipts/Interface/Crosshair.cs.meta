@@ -1,10 +1,16 @@
 fileFormatVersion: 2
 guid: 3e36b83b9812d0c46b7b9169dac88fa5
-timeCreated: 1468239811
+timeCreated: 1468951032
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - redCrosshairTexture: {fileID: 2800000, guid: 4d9f6c75d0c1e6b4abe175a3a18fd0ac,
+      type: 3}
+  - greenCrosshairTexture: {fileID: 2800000, guid: e8c09bd78735b29449868313306bf556,
+      type: 3}
+  - blueCrosshairTexture: {fileID: 2800000, guid: 996cb5653c6da75429be9fd359cc194e,
+      type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

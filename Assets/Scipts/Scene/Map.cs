@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class Map {
     //Хранение размеров карты и её создание из трёхмерного массива
-    public const int XDemension = 11, YDemension = 3, ZDemension = 11,
+    public const int XDemension = 21, YDemension = 3, ZDemension = 21,
                      ScaleXZ = 20, ScaleFloorY = 5, LevelHeight = 30, WholesCount = 1;
     public enum ElementType { Void, Floor, Wall, Start, End};
     public ElementType[,,]  map = new ElementType[XDemension, YDemension, ZDemension];

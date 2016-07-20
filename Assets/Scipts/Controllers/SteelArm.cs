@@ -4,10 +4,10 @@ using System.Collections;
 
 public class SteelArm : Weapon {
 
-    const float punchStartDelay = 0.2F, punchEndDelay = 0.4F;
-    const int damage = 20;
+    const float punchStartDelay = 0.1F, punchEndDelay = 0.25F;
+    const int damage = 100;
     float punchPeriodStartTime;
-    enum PunchStatus { Start, End };
+    enum PunchStatus { Start, End, Ready };
     PunchStatus punchStatus;
     int enemiesLayer = 1 << 8;
     Quaternion normalRotation, punchRotation, blockRotation;
@@ -22,14 +22,18 @@ public class SteelArm : Weapon {
     void Update() {
         if (isBlock)
         {
-            weapon.transform.localRotation = Quaternion.Lerp(weapon.transform.localRotation, blockRotation, Time.deltaTime * 20);
+            weapon.transform.localRotation = Quaternion.Lerp(weapon.transform.localRotation, blockRotation, Time.deltaTime * 15);
         }
-        else if (isEnabled)
+        else if (isEnabled || !(punchStatus == PunchStatus.Ready))
         {
             switch (punchStatus)
             {
+                case PunchStatus.Ready:
+                    if (isEnabled)
+                    punchStatus = PunchStatus.Start;
+                    break;
             case PunchStatus.Start:
-                    weapon.transform.localRotation = Quaternion.Lerp(weapon.transform.localRotation, punchRotation, Time.deltaTime * 20);
+                    weapon.transform.localRotation = Quaternion.Lerp(weapon.transform.localRotation, punchRotation, Time.deltaTime * 15);
                     if (Time.time - punchPeriodStartTime > punchStartDelay)
                     {
                         punchPeriodStartTime = Time.time;
@@ -41,18 +45,17 @@ public class SteelArm : Weapon {
                     }
                 break;
             case PunchStatus.End:
-                    weapon.transform.localRotation = Quaternion.Lerp(weapon.transform.localRotation, normalRotation, Time.deltaTime * 10);
+                    weapon.transform.localRotation = Quaternion.Lerp(weapon.transform.localRotation, normalRotation, Time.deltaTime * 15);
                     if (Time.time - punchPeriodStartTime > punchEndDelay)
                     {
                         punchPeriodStartTime = Time.time;
-                        punchStatus = PunchStatus.Start;
+                        punchStatus = PunchStatus.Ready;
                     }
                 break;
             }
         }
         else
         {
-            punchStatus = PunchStatus.Start;
             punchPeriodStartTime = Time.time;
             weapon.transform.localRotation = Quaternion.Lerp(weapon.transform.localRotation, normalRotation, Time.deltaTime * 20);
         }

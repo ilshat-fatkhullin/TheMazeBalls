@@ -9,7 +9,7 @@ public class MapGenerator : NetworkBehaviour {
 
     public Map map;
     GameObject[] ends;
-    const int BonusesCount = Map.ScaleXZ / 4;
+    const int BonusesCount = Map.ScaleXZ / 8;
 
     void Start () {
         map = new Map();
@@ -108,17 +108,30 @@ public class MapGenerator : NetworkBehaviour {
         }
         ReplaceEnds();
         MakeWholes();
+        MakeExit();
         map.CreateMap();
         MakeBonuses();
     }
 
-    public void UpdateBonus(GameObject bonus)
+    public void UpdateBonus(GameObject bonus, BonusController.BonusType bonusType)
     {
         NetworkServer.Destroy(bonus);
 
         Vector3 bonusPos = GetRandomFloor(Convert.ToInt32(transform.position.y / Map.LevelHeight));
         bonusPos = new Vector3(bonusPos.x * Map.ScaleXZ, bonusPos.y * Map.LevelHeight + Map.ScaleFloorY + 2.5F, bonusPos.z * Map.ScaleXZ);
-        GameObject newBonus = GameObject.Instantiate(Resources.Load("Bonus0")) as GameObject;
+        GameObject newBonus = null;
+        switch (bonusType)
+        {
+            case BonusController.BonusType.Health:
+                newBonus = GameObject.Instantiate(Resources.Load("Bonus0")) as GameObject;
+                break;
+            case BonusController.BonusType.Armor:
+                newBonus = GameObject.Instantiate(Resources.Load("Bonus1")) as GameObject;
+                break;
+            case BonusController.BonusType.Exp:
+                newBonus = GameObject.Instantiate(Resources.Load("Bonus2")) as GameObject;
+                break;
+        }
         newBonus.transform.position = bonusPos;
         NetworkServer.Spawn(newBonus);
     }
@@ -159,15 +172,54 @@ public class MapGenerator : NetworkBehaviour {
 
     private void MakeBonuses()
     {
+        for (int j = 0; j < 3; j++)
         for (int l = 0; l < Map.YDemension; l++)
             for (int i = 0; i < BonusesCount; i++)
             {
                 Vector3 bonusPos = GetRandomFloor(l);
                 bonusPos = new Vector3(bonusPos.x * Map.ScaleXZ, bonusPos.y * Map.LevelHeight + Map.ScaleFloorY + 2.5F, bonusPos.z * Map.ScaleXZ);
-                GameObject bonus = GameObject.Instantiate(Resources.Load("Bonus0")) as GameObject;
+                GameObject bonus = GameObject.Instantiate(Resources.Load("Bonus" + j)) as GameObject;
                 bonus.transform.position = bonusPos;
                 NetworkServer.Spawn(bonus);
             }
+    }
+
+    private void MakeExit()
+    {
+        int index = UnityEngine.Random.Range(1, (map.map.GetLength(0) / 2) * 2 - 1);
+        int side = UnityEngine.Random.Range(0, 3);
+
+        int x = 0, y = 0;
+
+        Vector2 floor_dir = Vector2.zero;
+
+        if (side == 0)
+        {
+            floor_dir = Vector2.left;
+            x = 0; y = index;
+        }
+        if (side == 1)
+        {
+            floor_dir = Vector2.up;
+            x = index; y = map.map.GetLength(0) - 1;
+        }
+        if (side == 2)
+        {
+            floor_dir = Vector2.right;
+            x = map.map.GetLength(0) - 1; y = index;
+        }
+        if (side == 3)
+        {
+            floor_dir = Vector2.down;
+            x = index; y = 0;
+        }
+
+        map.map[x, Map.YDemension - 1, y] = Map.ElementType.Floor;
+
+        Vector3 bonusPos = new Vector3(x * Map.ScaleXZ, (Map.YDemension - 1) * Map.LevelHeight + Map.ScaleFloorY + 2.5F, y * Map.ScaleXZ);
+        GameObject bonus = GameObject.Instantiate(Resources.Load("ExitBonus")) as GameObject;
+        bonus.transform.position = bonusPos;
+        NetworkServer.Spawn(bonus);
     }
 
     private void ReplaceEnds()

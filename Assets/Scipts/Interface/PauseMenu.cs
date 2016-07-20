@@ -16,8 +16,8 @@ public class PauseMenu : MonoBehaviour {
     string[] qualitySelection;
     int l_quality;
     float l_musicLevel, l_effectsLevel;
-    int quality;
-    float musicLevel = 1, effectsLevel = 1;
+    int quality, crosshair;
+    float musicLevel = 1, effectsLevel = 1, sensetive = 0.5F;
     string nickname;
     public Texture menuBackground;
     NetworkManager networkManager;
@@ -40,6 +40,13 @@ public class PauseMenu : MonoBehaviour {
         musicLevel = settingsStruct.musicLevel;
         effectsLevel = settingsStruct.effectsLevel;
         quality = settingsStruct.qualityLevel;
+        nickname = settingsStruct.nickname;
+        crosshair = settingsStruct.crosshair;
+        sensetive = settingsStruct.mouseSensetive;
+        if (sensetive < 0.5F)
+        {
+            sensetive = 0.5F;
+        }
         l_musicLevel = musicLevel;
         l_effectsLevel = effectsLevel;
         l_quality = quality;
@@ -96,7 +103,7 @@ public class PauseMenu : MonoBehaviour {
                         quality = l_quality;
                         musicLevel = l_musicLevel;
                         effectsLevel = l_effectsLevel;
-                        DataManager.SaveVars(musicLevel, effectsLevel, quality, nickname);
+                        DataManager.SaveVars(musicLevel, effectsLevel, sensetive, quality, crosshair, nickname);
                         menuStatus = MenuStatus.General;
                         SetQuality();
                     }
@@ -121,6 +128,8 @@ public class PauseMenu : MonoBehaviour {
         if (quality == 2)
             QualitySettings.SetQualityLevel(5);
         AudioSource[] sources = GameObject.FindObjectsOfType<AudioSource>();
+        userInterface.sensetive = sensetive;
+        userInterface.crosshairColor = crosshair;
         for (int i = 0; i < sources.GetLength(0); i++)
         {
             sources[i].volume = effectsLevel;

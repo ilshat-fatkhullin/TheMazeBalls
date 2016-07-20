@@ -4,11 +4,15 @@ using System;
 
 public class UserInterface : MonoBehaviour {
 
+    public float sensetive = 0.5F;
+    public int crosshairColor = 0;
+
     public float MouseX, MouseY, Horizontal, Vertical, Fire, Block;
     public int Number = 1;
     public bool Jump;
     public bool Num;
     public bool Tab;
+    public bool Flashlight;
     public bool Controllable = true;
     public Exp[] exps;
     Rect[] nicknamesRect = new Rect[8];
@@ -28,8 +32,8 @@ public class UserInterface : MonoBehaviour {
 
         for (int i = 0; i < nicknamesRect.GetLength(0); i++)
         {
-            nicknamesRect[i] = new Rect(Screen.width - pixel * 5, pixel + pixel * i, pixel * 3, pixel);
-            expsRect[i] = new Rect(Screen.width - pixel * 2, pixel + pixel * i, pixel * 2, pixel);
+            nicknamesRect[i] = new Rect(Screen.width - pixel * 8, pixel + pixel * i, pixel * 5, pixel);
+            expsRect[i] = new Rect(Screen.width - pixel * 3, pixel + pixel * i, pixel * 3, pixel);
         }
     }
 
@@ -52,14 +56,15 @@ public class UserInterface : MonoBehaviour {
         Num = false;
         if (Controllable)
         {
-            MouseX = Input.GetAxis("Mouse X");
-            MouseY = Input.GetAxis("Mouse Y");
-            Horizontal = Input.GetAxis("Horizontal");
-            Vertical = Input.GetAxis("Vertical");
-            Fire = Input.GetAxis("Fire1");
-            Block = Input.GetAxis("Fire2");
+            MouseX = Input.GetAxis("Mouse X") * (sensetive + 0.25F);
+            MouseY = Input.GetAxis("Mouse Y") * (sensetive + 0.25F);
+            Horizontal = Input.GetAxis("LeftRight");
+            Vertical = Input.GetAxis("ForwardBack");
+            Fire = Input.GetAxis("Fire");
+            Block = Input.GetAxis("Block");
             Jump = Input.GetAxis("Jump") > 0;
-            Tab = Input.GetKey(KeyCode.Tab);
+            Tab = Input.GetAxis("Tab") > 0;
+            Flashlight = Input.GetButtonDown("Flashlight");
             if (Input.GetKey(KeyCode.Alpha1))
             {
                 Num = true;

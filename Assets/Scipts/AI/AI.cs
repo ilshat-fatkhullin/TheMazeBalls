@@ -16,7 +16,7 @@ public class AI : NetworkBehaviour {
             _rigidbody = gameObject.GetComponent<Rigidbody>();
             mazeNavigator = gameObject.GetComponent<MazeNavigator>();
             weaponController = gameObject.GetComponent<AIWeaponController>();
-            gameObject.GetComponent<FlagsSynchronizer>().flagIndex = Random.Range(1, 196);
+            gameObject.GetComponent<FlagsSynchronizer>().flagIndex = Random.Range(0, 124);
         }
     }
 
@@ -65,6 +65,8 @@ public class AI : NetworkBehaviour {
             }
             else
             {
+                weaponController.isEnabled = false;
+                weaponController.isBlock = false;
                 transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(mazeNavigator.desiredVelocity), 5 * Time.deltaTime);
             }
         }

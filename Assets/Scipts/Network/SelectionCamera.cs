@@ -7,25 +7,24 @@ using System.Collections.Generic;
 
 public class SelectionCamera : NetworkBehaviour {
 
-    int count = 196;
-    int start = 0, end = 48;
+    int count = 125;
     int currentFlagIndex = 0;
-    int scrollerMax = 19, scrollerCurrent;
+    int smile = 0, eye = 0, background = 0;
     Texture[] flags;
-    Rect[] flagsRects;
-    Rect currentFlag, playButton, scrollerRect;
+    GUIStyle guiStyle = new GUIStyle();
+
+    Rect currentFlag, playButton,
+        backgroundScrollerRect, smileScrollerRect, eyeScrollerRect,
+        backgroundLabelRect, smileLabelRect, eyeLabelRect;
     MapGenerator mapGenerator;
 
     void Start()
     {
         flags = new Texture[count];
-        flagsRects = new Rect[count];
         float pixelX = Screen.width / 10,
         pixelY = Screen.height / 10;
         for (int i = 0; i < count; i++)
-        {
-            if (i <= end)
-            flagsRects[i] = new Rect(pixelX * (i % 8) + pixelX, pixelY * (i / 8) + pixelY, pixelX, pixelY);
+        {         
             flags[i] = Resources.Load(@"Flags\" + i) as Texture;
         }
 
@@ -34,11 +33,21 @@ public class SelectionCamera : NetworkBehaviour {
             gameObject.GetComponent<Camera>().enabled = true;
         }
 
-        currentFlag = new Rect(Screen.width - 4 * pixelX, Screen.height - pixelY * 2, pixelX, pixelY);
+        currentFlag = new Rect(Screen.width - 4 * pixelX, pixelY, pixelY * 6, pixelY * 6);
         playButton = new Rect(Screen.width - 2 * pixelX, Screen.height - pixelY * 2, pixelX, pixelY);
-        scrollerRect = new Rect(pixelX, pixelY / 2, pixelX * 8, pixelY);
+
+        backgroundScrollerRect = new Rect(pixelX, pixelY * 2, pixelX * 4, pixelY);
+        smileScrollerRect = new Rect(pixelX, pixelY * 4, pixelX * 4, pixelY);
+        eyeScrollerRect = new Rect(pixelX, pixelY * 6, pixelX * 4, pixelY);
+
+        backgroundLabelRect = new Rect(pixelX, pixelY, pixelX * 4, pixelY);
+        smileLabelRect = new Rect(pixelX, pixelY * 3, pixelX * 4, pixelY);
+        eyeLabelRect = new Rect(pixelX, pixelY * 5, pixelX * 4, pixelY);
 
         mapGenerator = GameObject.Find("SceneManager").GetComponent<MapGenerator>();
+
+        guiStyle.fontSize = Convert.ToInt32(pixelY / 2);
+        guiStyle.normal.textColor = Color.white;
     }
 
     void Update()
@@ -50,25 +59,17 @@ public class SelectionCamera : NetworkBehaviour {
 	void OnGUI () {
         if (isLocalPlayer)
         {
-            int j = 0;
-            for (int i = start; i < end; i++)
-            {
-                if (GUI.Button(flagsRects[j], flags[i]))
-                {
-                    currentFlagIndex = i;
-                }
-                j++;
-            }
-
             GUI.DrawTexture(currentFlag, flags[currentFlagIndex]);
 
-            scrollerCurrent = Convert.ToInt32(GUI.HorizontalSlider(scrollerRect, scrollerCurrent, 0, scrollerMax));
-            start = 8 * scrollerCurrent;
-            end = start + 48;
-            if (end > flags.GetLength(0))
-            {
-                end = flags.GetLength(0);
-            }
+            background = Convert.ToInt32(GUI.HorizontalSlider(backgroundScrollerRect, background, 0, 4));
+            smile = Convert.ToInt32(GUI.HorizontalSlider(smileScrollerRect, smile, 0, 4));
+            eye = Convert.ToInt32(GUI.HorizontalSlider(eyeScrollerRect, eye, 0, 4));
+
+            GUI.Label(backgroundLabelRect, "Цвет:", guiStyle);
+            GUI.Label(smileLabelRect, "Глаза:", guiStyle);
+            GUI.Label(eyeLabelRect, "Рот:", guiStyle);
+
+            currentFlagIndex = eye + smile * 5 + background * 25;
 
             if (GUI.Button(playButton, "Играть"))
             {
