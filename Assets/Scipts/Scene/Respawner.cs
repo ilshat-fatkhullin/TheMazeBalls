@@ -20,7 +20,7 @@ public class Respawner : NetworkBehaviour {
         {
             if (transform.position.y < - 10)
             {
-                Respawn();
+                gameObject.GetComponent<Health>().Death();
             }
         }
 	}
@@ -33,6 +33,7 @@ public class Respawner : NetworkBehaviour {
             synchronizeManager.RpcUpdatePos(spawn);
             gameObject.GetComponent<Health>().HP = Health.MAXHP;
             gameObject.GetComponent<Health>().ARMOR = Health.MAXARMOR;
+            gameObject.GetComponent<Health>().startTime = Time.time;
             if (gameObject.GetComponent<Exp>() != null)
             {
                 gameObject.GetComponent<Exp>().exp -= 50;

@@ -7,6 +7,9 @@ public class BonusController : NetworkBehaviour {
     public enum BonusType { Health, Armor, Exp, Exit }
     public BonusType bonusType;
 
+    float startTime;
+    const float Delay = 60;
+    bool off = false;
     MapGenerator mapGenerator;
 
     void Start()
@@ -16,9 +19,29 @@ public class BonusController : NetworkBehaviour {
         mapGenerator = GameObject.Find("SceneManager").GetComponent<MapGenerator>();
     }
 
+    [ClientRpc]
+    void RpcMakeOff()
+    {
+        gameObject.GetComponent<MeshRenderer>().enabled = false;
+        gameObject.GetComponent<Collider>().enabled = false;
+    }
+
+    [ClientRpc]
+    void RpcMakeOn()
+    {
+        gameObject.GetComponent<MeshRenderer>().enabled = true;
+        gameObject.GetComponent<Collider>().enabled = true;
+    }
+
     void Update()
     {
         transform.Rotate(Vector3.forward, -180 * Time.deltaTime);
+
+        if (isServer && off)
+        if (Time.time - startTime > Delay)
+        {
+            RpcMakeOn();
+        }
     }
 
 	void OnTriggerEnter (Collider col) {
@@ -30,16 +53,13 @@ public class BonusController : NetworkBehaviour {
                 {
                     case BonusType.Health:
                         col.GetComponent<Health>().HP = Health.MAXHP;
-                        mapGenerator.UpdateBonus(gameObject, BonusType.Health);
                         break;
                     case BonusType.Armor:
                         col.GetComponent<Health>().ARMOR = Health.MAXARMOR;
-                        mapGenerator.UpdateBonus(gameObject, BonusType.Armor);
                         break;
                     case BonusType.Exp:
                         if (col.tag == "Player")
                         col.GetComponent<Exp>().exp += 100;
-                        mapGenerator.UpdateBonus(gameObject, BonusType.Exp);
                         break;
                     case BonusType.Exit:
                         if (col.tag == "Player")
@@ -49,6 +69,13 @@ public class BonusController : NetworkBehaviour {
                         }
                         break;
                 }
+            }
+
+            if (bonusType != BonusType.Exit)
+            {
+                off = true;
+                startTime = Time.time;
+                RpcMakeOff();
             }
         }
 	}

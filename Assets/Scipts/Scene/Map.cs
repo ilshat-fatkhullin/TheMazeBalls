@@ -5,9 +5,12 @@ using System.Collections.Generic;
 public class Map {
     //Хранение размеров карты и её создание из трёхмерного массива
     public const int XDemension = 21, YDemension = 3, ZDemension = 21,
-                     ScaleXZ = 20, ScaleFloorY = 5, LevelHeight = 30, WholesCount = 1;
-    public enum ElementType { Void, Floor, Wall, Start, End};
-    public ElementType[,,]  map = new ElementType[XDemension, YDemension, ZDemension];
+                     ScaleXZ = 20, ScaleFloorY = 5, LevelHeight = 30,
+                     WholesCount = (XDemension * YDemension) / 5, EndsCount = (XDemension * ZDemension) / 50, BonusesCount = (XDemension * YDemension) / 10;
+    public enum ObjectElementType { Void, Floor, Wall, Start, End};
+    public enum UnitElementType { Void, Unit };
+    public ObjectElementType[,,]  map = new ObjectElementType[XDemension, YDemension, ZDemension];
+    public UnitElementType[,,] unitMap = new UnitElementType[XDemension, YDemension, ZDemension];
     GameObject[,,] mapObjects = new GameObject[XDemension, YDemension, ZDemension];
 
     public Map()
@@ -31,7 +34,7 @@ public class Map {
             for (int j = 0; j < Map.YDemension; j++)
                 for (int k = 0; k < Map.ZDemension; k++)
                 {
-                    map[i, j, k] = ElementType.Void;
+                    map[i, j, k] = ObjectElementType.Void;
                     GameObject.Destroy(mapObjects[i, j, k]);
                     mapObjects[i, j, k] = null;
                 }
@@ -42,17 +45,17 @@ public class Map {
         int sizeY = ScaleFloorY;
         switch (map[i, j, k])
         {
-            case ElementType.Floor:
+            case ObjectElementType.Floor:
                 mapObjects[i, j, k] = GameObject.Instantiate(Resources.Load("Floor" + j)) as GameObject;
                 break;
-            case ElementType.Wall:
+            case ObjectElementType.Wall:
                 mapObjects[i, j, k] = GameObject.Instantiate(Resources.Load("Wall" + j)) as GameObject;
                 sizeY = LevelHeight;
                 break;
-            case ElementType.Start:
+            case ObjectElementType.Start:
                 mapObjects[i, j, k] = GameObject.Instantiate(Resources.Load("Floor" + j)) as GameObject;
                 break;
-            case ElementType.End:
+            case ObjectElementType.End:
                 mapObjects[i, j, k] = GameObject.Instantiate(Resources.Load("Floor" + j)) as GameObject;
                 break;
         }

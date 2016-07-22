@@ -13,13 +13,13 @@ public class SceneStyleController : NetworkBehaviour {
 
     void OnPlayerConnected(NetworkPlayer player)
     {
-        RpcChangeScene(DataManager.LoadBool());
+        RpcChangeScene(DataManager.LoadBool().isDarkness);
     }
 
     void Start()
     {
         if (isServer)
-        if (DataManager.LoadBool())
+        if (DataManager.LoadBool().isDarkness)
             MakeDarkness();
     }
 

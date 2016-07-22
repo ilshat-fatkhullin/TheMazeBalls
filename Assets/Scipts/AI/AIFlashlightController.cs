@@ -4,10 +4,9 @@ using System.Collections;
 
 public class AIFlashlightController : NetworkBehaviour
 {
-    UserInterface userInterface;
     bool isFlashlightEnabled = true;
     Light flashlight;
-    const float UpdateTime = 720;
+    const float UpdateTime = 60;
     public float delayTime = 0;
 
     void Start()

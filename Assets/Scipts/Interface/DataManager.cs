@@ -6,28 +6,33 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 public class DataManager {
 
-    public static void SaveBool(bool val)
+    public static void SaveBool(bool val, int difficult)
     {
         BinaryFormatter bf = new BinaryFormatter();
         FileStream file = new FileStream(Application.persistentDataPath + "/level.dat", FileMode.OpenOrCreate);
-
-        bf.Serialize(file, val);
+        GameSettings settingsStruct = new GameSettings();
+        settingsStruct.difficult = difficult;
+        settingsStruct.isDarkness = val;
+        bf.Serialize(file, settingsStruct);
         file.Close();
     }
 
-    public static bool LoadBool()
+    public static GameSettings LoadBool()
     {
         if (File.Exists(Application.persistentDataPath + "/level.dat"))
         {
             BinaryFormatter bf = new BinaryFormatter();
             FileStream file = File.Open(Application.persistentDataPath + "/level.dat", FileMode.Open);
-            bool val = (bool)bf.Deserialize(file);
+            GameSettings settingsStruct = (GameSettings)bf.Deserialize(file);
             file.Close();
-            return val;
+            return settingsStruct;
         }
         else
         {
-            return false;
+            GameSettings settingsStruct = new GameSettings();
+            settingsStruct.difficult = 0;
+            settingsStruct.isDarkness = false;
+            return settingsStruct;
         }
     }
 
@@ -71,6 +76,13 @@ public class DataManager {
             return settingsStruct;
         }
     }
+}
+
+[Serializable]
+public class GameSettings
+{
+    public bool isDarkness;
+    public int difficult;
 }
 
 [Serializable]

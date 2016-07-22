@@ -23,9 +23,13 @@ public class WeaponController : NetworkBehaviour {
 
     void ChangeWeapon(int newIndex)
     {
-        if (newIndex <= weapons.GetLength(0))
+        if (newIndex < weapons.GetLength(0))
         {
             weaponIndex = newIndex;
+        }
+        else
+        {
+            return;
         }
 
         for (int i = 0; i < weapons.GetLength(0); i++)
@@ -54,15 +58,14 @@ public class WeaponController : NetworkBehaviour {
             }
             if (userInterface.Num)
             {
-                weaponIndex = userInterface.Number - 1;
-                ChangeWeapon(weaponIndex);
+                ChangeWeapon(userInterface.Number - 1);
                 if (isServer)
                 {
-                    RpcChangeWeaponIndex(weaponIndex);
+                    RpcChangeWeaponIndex(userInterface.Number - 1);
                 }
                 else
                 {
-                    CmdChangeWeaponIndex(weaponIndex);
+                    CmdChangeWeaponIndex(userInterface.Number - 1);
                 }
             }
         }

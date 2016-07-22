@@ -6,10 +6,14 @@ using System.Collections.Generic;
 
 public class MazeNavigator : NetworkBehaviour {
 
+    const float JumpDelay = 0.5F;
+
     public Vector3 desiredVelocity;
     public float remainingDistance;
+    public bool jump = false;
+    bool localJump = false;
 
-    MapGenerator map;
+    MapGenerator mapGeneratore;
 
     private bool TestRange(Vector3 pos)
     {
@@ -22,9 +26,9 @@ public class MazeNavigator : NetworkBehaviour {
 
     private Vector3 GetClosestPoint(Vector3 pos)
     {
-        int x = Convert.ToInt32(pos.x / Map.ScaleXZ);
-        int y = Convert.ToInt32(pos.y / Map.LevelHeight);
-        int z = Convert.ToInt32(pos.z / Map.ScaleXZ);
+        int x = (int)((pos.x + Map.ScaleXZ / 2) / Map.ScaleXZ);
+        int y = (int)(pos.y / Map.LevelHeight);
+        int z = (int)((pos.z + Map.ScaleXZ / 2) / Map.ScaleXZ);
 
         return new Vector3(x, y, z);
     }
@@ -32,44 +36,140 @@ public class MazeNavigator : NetworkBehaviour {
     void Start()
     {
         if (isServer)
-        map = GameObject.Find("SceneManager").GetComponent<MapGenerator>();
+        {
+            mapGeneratore = GameObject.Find("SceneManager").GetComponent<MapGenerator>();
+        }
     }
 
-    Vector3 last = Vector3.zero;
-    Vector3 el;
+    Vector3 lastPos = Vector3.zero;
     Vector3 target;
+    Vector3 currentDirection;
+
+    float jumpStartTime;
 
     void Update()
     {
         if (isServer)
         {
-            Vector3 beginPos = GetClosestPoint(transform.position);
-            if (beginPos != last)
+            if (localJump)
+                if (Time.time - jumpStartTime > JumpDelay)
+                {
+                    localJump = false;
+                    jump = true;
+                }
+
+            Vector3 currentPos = GetClosestPoint(transform.position);
+
+            int x = Convert.ToInt32(currentPos.x);
+            int y = Convert.ToInt32(currentPos.y);
+            int z = Convert.ToInt32(currentPos.z);
+
+            if (TestRange(currentPos))
             {
-                int i = UnityEngine.Random.Range(0, 4);
-                Vector3 dir = Quaternion.Euler(0, 90 * i, 0) * Vector3.forward;
-                Vector3 psDir = Vector3.zero;
-                for (int j = 0; j < 5; j++)
+                mapGeneratore.map.unitMap[x, y, z] = Map.UnitElementType.Unit;
+            }
+            if (currentPos != lastPos)
+            {
+                if (TestRange(lastPos))
+                    mapGeneratore.map.unitMap[Convert.ToInt32(lastPos.x), Convert.ToInt32(lastPos.y), Convert.ToInt32(lastPos.z)] = Map.UnitElementType.Void;
+
+                if (TestRange(currentPos))
                 {
-                    psDir = (beginPos + dir);
-                    if (TestRange(psDir) && map.map.map[Convert.ToInt32(psDir.x), Convert.ToInt32(psDir.y), Convert.ToInt32(psDir.z)] == Map.ElementType.Floor)
+                    if (IsIntersection(x, y, z) || IsDeadEnd(x, y, z) || desiredVelocity == Vector3.zero)
                     {
-                        break;
+                        currentDirection = GetRandomDirection(x, y, z);                       
                     }
-                    dir = Quaternion.Euler(0, 90, 0) * dir;
+
+                    int x2 = RoundFloat(currentDirection.x) + x;
+                    int y2 = RoundFloat(currentDirection.y) + y;
+                    int z2 = RoundFloat(currentDirection.z) + z;
+
+                    localJump = mapGeneratore.map.map[x2, y2, z2] != Map.ObjectElementType.Floor || mapGeneratore.map.unitMap[x2, y2, z2] != Map.UnitElementType.Void;
+                    if (localJump)
+                    {
+                        jumpStartTime = Time.time;
+                    }
+                    target = new Vector3(x2 * Map.ScaleXZ, (y2 * Map.LevelHeight) + (Map.ScaleFloorY / 2) + 2.5F, z2 * Map.ScaleXZ);
                 }
-                if (TestRange(psDir) && psDir != Vector3.zero)
-                {
-                    el = new Vector3(Convert.ToInt32(psDir.x), Convert.ToInt32(psDir.y), Convert.ToInt32(psDir.z));
-                }
-                if (el != null)
-                target = new Vector3(el.x * Map.ScaleXZ, el.y * Map.LevelHeight, el.z * Map.ScaleXZ);
+
+                lastPos = currentPos;
             }
 
-
-            desiredVelocity = (target - transform.position).normalized;
+            desiredVelocity = target - transform.position;
             desiredVelocity.y = 0;
-            last = beginPos;
+            desiredVelocity.Normalize();
         }  
+    }
+
+    private int RoundFloat(float value)
+    {
+        if (Math.Sign(value) == -1)
+            return (int)(value - 0.5);  
+        else
+            return (int)(value + 0.5);
+    }
+
+    private bool IsDeadEnd(int x, int y, int z)
+    {
+        int i = 0;
+        if (TestRange(new Vector3(x + 1, y, z)))
+            if (mapGeneratore.map.map[x + 1, y, z] != Map.ObjectElementType.Wall)
+            i++;
+        if (TestRange(new Vector3(x - 1, y, z)))
+            if (mapGeneratore.map.map[x - 1, y, z] != Map.ObjectElementType.Wall)
+            i++;
+        if (TestRange(new Vector3(x, y, z + 1)))
+            if (mapGeneratore.map.map[x, y, z + 1] != Map.ObjectElementType.Wall)
+            i++;
+        if (TestRange(new Vector3(x, y, z - 1)))
+            if (mapGeneratore.map.map[x, y, z - 1] != Map.ObjectElementType.Wall)
+            i++;
+
+        return i <= 1;
+    }
+
+    private Vector3 GetRandomDirection(int x, int y, int z)
+    {
+        int i = UnityEngine.Random.Range(0, 4);
+        Vector3 dir = Quaternion.Euler(0, 90 * i, 0) * Vector3.forward;
+        for (int j = 0; j < 5; j++)
+        {
+            int xDelta = RoundFloat(dir.x),
+                yDelta = RoundFloat(dir.y),
+                zDelta = RoundFloat(dir.z);
+
+            if (TestRange(new Vector3(x + xDelta, y, z + zDelta)))
+                if (mapGeneratore.map.map[x + xDelta, y, z + zDelta] != Map.ObjectElementType.Wall)
+                    return dir;
+            dir = Quaternion.Euler(0, 90, 0) * dir;
+        }
+
+        return Vector3.zero;
+    }
+
+    private bool IsIntersection(int x, int y, int z)
+    {
+        bool x0 = false,
+            x1 = false,
+            z0 = false,
+            z1 = false;
+
+        if (TestRange(new Vector3(x + 1, y, z)))
+            if (mapGeneratore.map.map[x + 1, y, z] != Map.ObjectElementType.Wall)
+                x0 = true;
+
+        if (TestRange(new Vector3(x - 1, y, z)))
+            if (mapGeneratore.map.map[x - 1, y, z] != Map.ObjectElementType.Wall)
+                x1 = true;
+
+        if (TestRange(new Vector3(x, y, z + 1)))
+            if (mapGeneratore.map.map[x, y, z + 1] != Map.ObjectElementType.Wall)
+                z0 = true;
+
+        if (TestRange(new Vector3(x, y, z - 1)))
+            if (mapGeneratore.map.map[x, y, z - 1] != Map.ObjectElementType.Wall)
+                z1 = true;
+
+        return ((x0 || x1) && (z0 || z1));
     }
 }

@@ -6,8 +6,9 @@ using System;
 public class Health : NetworkBehaviour {
     [SyncVar]
     public int HP = 100, ARMOR = 100;
-    public const int MAXHP = 100, MAXARMOR = 100;
+    public const int MAXHP = 100, MAXARMOR = 100, UNTOUCHABLETIME = 3;
     public bool Block = false;
+    public float startTime;
     MonoBehaviour[] scripts;
     MonoBehaviour[] child_scripts;
     Rigidbody _rigidbody;
@@ -18,7 +19,7 @@ public class Health : NetworkBehaviour {
         scripts = gameObject.GetComponents<MonoBehaviour>();
         child_scripts = gameObject.GetComponentsInChildren<MonoBehaviour>();
         _rigidbody = gameObject.GetComponent<Rigidbody>();
-
+        startTime = Time.time;
         userInterface = GameObject.Find("UserInterface").GetComponent<UserInterface>();
     }
 
@@ -33,40 +34,43 @@ public class Health : NetworkBehaviour {
 
     public void Damage(int damage, Vector3 pos, Transform newKiller)
     {
-        if (!isServer)
+        if (Time.time - startTime > UNTOUCHABLETIME)
         {
-            throw new Exception("Damage called by server.");
-        }
+            if (!isServer)
+            {
+                throw new Exception("Damage called by server.");
+            }
 
-        if (!(gameObject.tag == "AI"))
-        {
-            gameObject.GetComponent<SynchronizeManager>().RpcAddForce((((transform.position - pos).normalized * 3) + Vector3.up * 0.5F) * 60);
-        }
-        else
-        {
-            _rigidbody.AddForce((((transform.position - pos).normalized * 3) + Vector3.up * 0.5F) * 60, ForceMode.Impulse);
-        }
+            if (!(gameObject.tag == "AI"))
+            {
+                gameObject.GetComponent<SynchronizeManager>().RpcAddForce((((transform.position - pos).normalized * 3) + Vector3.up * 0.5F) * 60);
+            }
+            else
+            {
+                _rigidbody.AddForce((((transform.position - pos).normalized * 3) + Vector3.up * 0.5F) * 60, ForceMode.Impulse);
+            }
 
-        killer = newKiller;
+            killer = newKiller;
 
-        ARMOR -= damage;
+            ARMOR -= damage;
 
-        if (ARMOR < 0)
-        {
-            HP += ARMOR;
-            ARMOR = 0;
-        }
-        if (HP < 0)
-        {
-            HP = 0;
-        }
-        if (HP == 0)
-        {
-            Death();
-        }        
+            if (ARMOR < 0)
+            {
+                HP += ARMOR;
+                ARMOR = 0;
+            }
+            if (HP < 0)
+            {
+                HP = 0;
+            }
+            if (HP == 0)
+            {
+                Death();
+            }
+        }      
     }
 
-    void Death()
+    public void Death()
     {
         if (killer != null)
         {

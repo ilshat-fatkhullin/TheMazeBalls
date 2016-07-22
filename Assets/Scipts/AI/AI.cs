@@ -4,11 +4,13 @@ using System.Collections;
 
 public class AI : NetworkBehaviour {
     MazeNavigator mazeNavigator;
-    float punchDistance = 6, fireDistance = 50, speed = 60, maxSpeed = 20;
+    float punchDistance = 6, fireDistance = 50, speed = 90, maxSpeed = 20;
     Rigidbody _rigidbody;
     public Transform enemie;
     AIWeaponController weaponController;
     const float Delay = 1.5F;
+    float k_GroundRayLength = 3;
+    float jumpForce = 60;
 
 	void Start () {
         if (isServer)
@@ -24,6 +26,13 @@ public class AI : NetworkBehaviour {
     {
         if (isServer)
         {
+            bool grounded = Physics.Raycast(transform.position, -Vector3.up, k_GroundRayLength);
+            if (mazeNavigator.jump && grounded)
+            {
+                mazeNavigator.jump = false;
+                _rigidbody.velocity = new Vector3(_rigidbody.velocity.x, 0, _rigidbody.velocity.z);
+                _rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            }
             _rigidbody.AddForce(mazeNavigator.desiredVelocity * speed * 60 * Time.deltaTime, ForceMode.Force);
             Vector2 dir = new Vector2(_rigidbody.velocity.x, _rigidbody.velocity.z);
             if (dir.magnitude > maxSpeed)
@@ -45,6 +54,7 @@ public class AI : NetworkBehaviour {
                 lastUpdateTime = Time.time;
                 enemie = null;
             }
+
             if (enemie != null)
             {
                 transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(enemie.position - transform.position), 5 * Time.deltaTime);

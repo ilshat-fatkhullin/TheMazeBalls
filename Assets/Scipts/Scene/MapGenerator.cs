@@ -9,13 +9,14 @@ public class MapGenerator : NetworkBehaviour {
 
     public Map map;
     GameObject[] ends;
-    const int BonusesCount = Map.ScaleXZ / 8;
+    List<Point2D>[] floorPoints;
+    int[] floorIndexes;
 
     void Start () {
         map = new Map();
         if (isServer)
         {
-            ends = new GameObject[Map.YDemension - 1];
+            ends = new GameObject[(Map.YDemension - 1) * Map.EndsCount];
             for (int i = 0; i < ends.GetLength(0); i++)
             {
                 ends[i] = GameObject.Instantiate(Resources.Load("End")) as GameObject;
@@ -35,19 +36,19 @@ public class MapGenerator : NetworkBehaviour {
                 {
                     switch (map.map[i, j, k])
                     {
-                        case Map.ElementType.Floor:
+                        case Map.ObjectElementType.Floor:
                             returned_string += "f";
                             break;
-                        case Map.ElementType.Wall:
+                        case Map.ObjectElementType.Wall:
                             returned_string += "w";
                             break;
-                        case Map.ElementType.Void:
+                        case Map.ObjectElementType.Void:
                             returned_string += "v";
                             break;
-                        case Map.ElementType.Start:
+                        case Map.ObjectElementType.Start:
                             returned_string += "s";
                             break;
-                        case Map.ElementType.End:
+                        case Map.ObjectElementType.End:
                             returned_string += "e";
                             break;
                     }
@@ -65,15 +66,15 @@ public class MapGenerator : NetworkBehaviour {
                 {
                     char cur_ch = s[k + j * Map.ZDemension + i * Map.ZDemension * Map.YDemension];
                     if (cur_ch == 'f')
-                        map.map[i, j, k] = Map.ElementType.Floor;
+                        map.map[i, j, k] = Map.ObjectElementType.Floor;
                     if (cur_ch == 'w')
-                        map.map[i, j, k] = Map.ElementType.Wall;
+                        map.map[i, j, k] = Map.ObjectElementType.Wall;
                     if (cur_ch == 'v')
-                        map.map[i, j, k] = Map.ElementType.Void;
+                        map.map[i, j, k] = Map.ObjectElementType.Void;
                     if (cur_ch == 's')
-                        map.map[i, j, k] = Map.ElementType.Start;
+                        map.map[i, j, k] = Map.ObjectElementType.Start;
                     if (cur_ch == 'e')
-                        map.map[i, j, k] = Map.ElementType.End;
+                        map.map[i, j, k] = Map.ObjectElementType.End;
                 }
     }
 
@@ -98,14 +99,16 @@ public class MapGenerator : NetworkBehaviour {
                     switch (maze[i, k])
                     {
                         case MazeCell.Void:
-                            map.map[i, j, k] = Map.ElementType.Floor;
+                            map.map[i, j, k] = Map.ObjectElementType.Floor;
                             break;
                         case MazeCell.Wall:
-                            map.map[i, j, k] = Map.ElementType.Wall;
+                            map.map[i, j, k] = Map.ObjectElementType.Wall;
                             break;
                     }
                 }
         }
+
+        FillFloorList();
         ReplaceEnds();
         MakeWholes();
         MakeExit();
@@ -113,37 +116,14 @@ public class MapGenerator : NetworkBehaviour {
         MakeBonuses();
     }
 
-    public void UpdateBonus(GameObject bonus, BonusController.BonusType bonusType)
-    {
-        NetworkServer.Destroy(bonus);
-
-        Vector3 bonusPos = GetRandomFloor(Convert.ToInt32(transform.position.y / Map.LevelHeight));
-        bonusPos = new Vector3(bonusPos.x * Map.ScaleXZ, bonusPos.y * Map.LevelHeight + Map.ScaleFloorY + 2.5F, bonusPos.z * Map.ScaleXZ);
-        GameObject newBonus = null;
-        switch (bonusType)
-        {
-            case BonusController.BonusType.Health:
-                newBonus = GameObject.Instantiate(Resources.Load("Bonus0")) as GameObject;
-                break;
-            case BonusController.BonusType.Armor:
-                newBonus = GameObject.Instantiate(Resources.Load("Bonus1")) as GameObject;
-                break;
-            case BonusController.BonusType.Exp:
-                newBonus = GameObject.Instantiate(Resources.Load("Bonus2")) as GameObject;
-                break;
-        }
-        newBonus.transform.position = bonusPos;
-        NetworkServer.Spawn(newBonus);
-    }
-
     public Vector3 GetRandomFloor(int level)
     {
-        int x = UnityEngine.Random.Range(0, Map.XDemension / 2);
-        int z = UnityEngine.Random.Range(1, Map.ZDemension / 2);
+        int x = UnityEngine.Random.Range(0, Map.XDemension - 1);
+        int z = UnityEngine.Random.Range(0, Map.ZDemension - 1);
 
-        while (true)
+        for (int i = 0; i < Map.XDemension * Map.ZDemension; i++)
         {
-            if (map.map[x, level, z] == Map.ElementType.Floor)
+            if (map.map[x, level, z] == Map.ObjectElementType.Floor)
             {
                 return new Vector3(x, level, z);
             }
@@ -152,12 +132,41 @@ public class MapGenerator : NetworkBehaviour {
             {
                 x = 0;
                 z += 1;
-                if (z >= Map.YDemension)
+                if (z >= Map.ZDemension)
                 {
                     z = 0;
                 }
             }
         }
+        return Vector3.zero;
+    }
+
+    private void FillFloorList()
+    {
+        floorPoints = new List<Point2D>[Map.YDemension];
+        floorIndexes = new int[Map.YDemension];
+
+        for (int i = 0; i < floorPoints.GetLength(0); i++)
+        {
+            floorPoints[i] = new List<Point2D>();
+        }
+
+        for (int x = 0; x < Map.XDemension / 2; x++)
+            for (int y = 0; y < Map.YDemension; y++)
+                for (int z = 0; z < Map.ZDemension / 2; z++)
+                {
+                    floorPoints[y].Add(new Point2D(x * 2 + 1, z * 2 + 1));                    
+                }
+
+        for (int l = 0; l < Map.YDemension; l++)
+            for (int i = 0; i < floorPoints[l].Count; i++)
+            {
+                int index = UnityEngine.Random.Range(i, floorPoints[l].Count - 1);
+
+                Point2D temp = floorPoints[l][i];
+                floorPoints[l][i] = floorPoints[l][index];
+                floorPoints[l][index] = temp;
+            }
     }
 
     private void MakeWholes()
@@ -165,8 +174,9 @@ public class MapGenerator : NetworkBehaviour {
         for (int l = 0; l < Map.YDemension; l++)
         for (int i = 0; i < Map.WholesCount; i++)
         {
-            Vector3 randomFloor = GetRandomFloor(l);
-            map.map[Convert.ToInt32(randomFloor.x), Convert.ToInt32(randomFloor.y), Convert.ToInt32(randomFloor.z)] = Map.ElementType.Void;
+            Point2D posPoint = floorPoints[l][floorIndexes[l]];
+            floorIndexes[l]++;
+            map.map[Convert.ToInt32(posPoint.X), l, Convert.ToInt32(posPoint.Y)] = Map.ObjectElementType.Void;
         }
     }
 
@@ -174,13 +184,14 @@ public class MapGenerator : NetworkBehaviour {
     {
         for (int j = 0; j < 3; j++)
         for (int l = 0; l < Map.YDemension; l++)
-            for (int i = 0; i < BonusesCount; i++)
+            for (int i = 0; i < Map.BonusesCount; i++)
             {
-                Vector3 bonusPos = GetRandomFloor(l);
-                bonusPos = new Vector3(bonusPos.x * Map.ScaleXZ, bonusPos.y * Map.LevelHeight + Map.ScaleFloorY + 2.5F, bonusPos.z * Map.ScaleXZ);
-                GameObject bonus = GameObject.Instantiate(Resources.Load("Bonus" + j)) as GameObject;
-                bonus.transform.position = bonusPos;
-                NetworkServer.Spawn(bonus);
+                    Point2D posPoint = floorPoints[l][floorIndexes[l]];
+                    floorIndexes[l]++;
+                    Vector3 bonusPos = new Vector3(posPoint.X * Map.ScaleXZ, l * Map.LevelHeight + Map.ScaleFloorY + 2.5F, posPoint.Y * Map.ScaleXZ);
+                    GameObject bonus = GameObject.Instantiate(Resources.Load("Bonus" + j)) as GameObject;
+                    bonus.transform.position = bonusPos;
+                    NetworkServer.Spawn(bonus);
             }
     }
 
@@ -214,7 +225,7 @@ public class MapGenerator : NetworkBehaviour {
             x = index; y = 0;
         }
 
-        map.map[x, Map.YDemension - 1, y] = Map.ElementType.Floor;
+        map.map[x, Map.YDemension - 1, y] = Map.ObjectElementType.Floor;
 
         Vector3 bonusPos = new Vector3(x * Map.ScaleXZ, (Map.YDemension - 1) * Map.LevelHeight + Map.ScaleFloorY + 2.5F, y * Map.ScaleXZ);
         GameObject bonus = GameObject.Instantiate(Resources.Load("ExitBonus")) as GameObject;
@@ -224,12 +235,17 @@ public class MapGenerator : NetworkBehaviour {
 
     private void ReplaceEnds()
     {
-        for (int i = 0; i < ends.GetLength(0); i++)
-        {
-            Vector3 randomFloor = GetRandomFloor(i);
-            map.map[Convert.ToInt32(randomFloor.x), Convert.ToInt32(randomFloor.y), Convert.ToInt32(randomFloor.z)] = Map.ElementType.Start;
-            map.map[Convert.ToInt32(randomFloor.x), Convert.ToInt32(randomFloor.y) + 1, Convert.ToInt32(randomFloor.z)] = Map.ElementType.End;
-            ends[i].transform.position = new Vector3(randomFloor.x * Map.ScaleXZ, (randomFloor.y * Map.LevelHeight) + Map.ScaleFloorY, randomFloor.z * Map.ScaleXZ);
-        }
+        for (int l = 0; l < Map.YDemension - 1; l++)
+            for (int i = 0; i < Map.EndsCount; i++)
+            {
+                Point2D posPoint = floorPoints[l][floorIndexes[l]];
+                floorIndexes[l]++;
+                map.map[Convert.ToInt32(posPoint.X), l, Convert.ToInt32(posPoint.Y)] = Map.ObjectElementType.Start;
+                map.map[Convert.ToInt32(posPoint.X), l + 1, Convert.ToInt32(posPoint.Y)] = Map.ObjectElementType.End;
+                for (int k = 0; k < floorPoints[l+1].Count; k++)
+                    if (floorPoints[l + 1][k].X == posPoint.X && floorPoints[l + 1][k].Y == posPoint.Y)
+                    floorPoints[l + 1].RemoveAt(k);
+                ends[l * Map.EndsCount + i].transform.position = new Vector3(posPoint.X * Map.ScaleXZ, (l * Map.LevelHeight) + Map.ScaleFloorY, posPoint.Y * Map.ScaleXZ);
+            }
     }
 }

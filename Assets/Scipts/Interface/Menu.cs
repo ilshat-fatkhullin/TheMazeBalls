@@ -100,7 +100,7 @@ public class Menu : MonoBehaviour {
                 isDarkness = GUI.Toggle(buttons[2], isDarkness, "Мрак");
                 if (GUI.Button(buttons[3], "Играть"))
                 {
-                    DataManager.SaveBool(isDarkness);
+                    StartGame();
                     networkManager.StartHost();
                 }
                 if (GUI.Button(buttons[4], "Назад"))
@@ -190,7 +190,7 @@ public class Menu : MonoBehaviour {
                 isDarkness = GUI.Toggle(buttons[2], isDarkness, "Мрак");
                 if (GUI.Button(buttons[3], "Создать"))
                 {
-                    DataManager.SaveBool(isDarkness);
+                    StartGame();
                     networkManager.StartHost();
                 }
                 if (GUI.Button(buttons[4], "Назад"))
@@ -234,6 +234,11 @@ public class Menu : MonoBehaviour {
         nickname = l_nickname;
         DataManager.SaveVars(musicLevel, effectsLevel, sensetive, quality, crosshair, nickname);
         menuStatus = MenuStatus.Options;
+    }
+
+    void StartGame()
+    {
+        DataManager.SaveBool(isDarkness, difficult);
     }
 
     void OnServerError()
