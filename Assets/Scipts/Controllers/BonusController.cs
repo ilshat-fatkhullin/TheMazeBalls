@@ -23,14 +23,12 @@ public class BonusController : NetworkBehaviour {
     void RpcMakeOff()
     {
         gameObject.GetComponent<MeshRenderer>().enabled = false;
-        gameObject.GetComponent<Collider>().enabled = false;
     }
 
     [ClientRpc]
     void RpcMakeOn()
     {
         gameObject.GetComponent<MeshRenderer>().enabled = true;
-        gameObject.GetComponent<Collider>().enabled = true;
     }
 
     void Update()

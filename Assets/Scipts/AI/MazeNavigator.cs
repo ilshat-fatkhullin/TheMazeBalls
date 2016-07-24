@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 public class MazeNavigator : NetworkBehaviour {
 
-    const float JumpDelay = 0.5F;
+    const float JumpDelay = 0.65F;
 
     public Vector3 desiredVelocity;
     public float remainingDistance;

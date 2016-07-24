@@ -28,7 +28,7 @@ public class AIFlashlightController : NetworkBehaviour
             if (Time.time - delayTime > UpdateTime)
             {
                 delayTime += UpdateTime;
-                if (Random.Range(0, 2) == 0)
+                if (Random.Range(0, 3) == 0)
                 {
                     isFlashlightEnabled = !isFlashlightEnabled;
                     RpcChangeBool(isFlashlightEnabled);

@@ -6,7 +6,7 @@ using System;
 public class Spawner : NetworkBehaviour {
 
     MapGenerator map;
-    const int AICOUNT = (Map.XDemension * Map.YDemension) / 10;
+    const int AICOUNT = (Map.XDemension * Map.YDemension) / 5;
     GameObject[] ais;
     bool set = true;
     float accuracy;
