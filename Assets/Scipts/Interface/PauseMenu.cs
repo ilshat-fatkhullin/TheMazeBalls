@@ -4,6 +4,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System;
 using UnityEngine.Networking;
+using System.Collections.Generic;
 
 public class PauseMenu : MonoBehaviour {
 
@@ -21,6 +22,7 @@ public class PauseMenu : MonoBehaviour {
     string nickname;
     public Texture menuBackground;
     NetworkManager networkManager;
+    public GUIStyle buttonGuiStyle;
 
     void Start () {
         userInterface = gameObject.GetComponent<UserInterface>();
@@ -31,10 +33,8 @@ public class PauseMenu : MonoBehaviour {
 
         for (int i = 0; i < buttons.GetLength(0); i++)
         {
-            buttons[i] = new Rect(pixel, pixel * i + pixel, pixel * 4, pixel / 1.2F);
+            buttons[i] = new Rect(pixel, pixel * i + pixel, pixel * 4, pixel / 1.5F);
         }
-
-        qualitySelection = new string[] { "Низкое", "Среднее", "Высокое" };
 
         Settings settingsStruct = DataManager.LoadVars();
         musicLevel = settingsStruct.musicLevel;
@@ -52,6 +52,8 @@ public class PauseMenu : MonoBehaviour {
         l_quality = quality;
         SetQuality();
         networkManager = GameObject.Find("NetworkManager").GetComponent<NetworkManager>();
+
+        qualitySelection = new string[] { userInterface.wordsList[8], userInterface.wordsList[9], userInterface.wordsList[10] };
     }
 	
 	void Update () {
@@ -71,15 +73,15 @@ public class PauseMenu : MonoBehaviour {
             switch (menuStatus)
             {
                 case MenuStatus.General:
-                    if (GUI.Button(buttons[0], "Продолжить"))
+                    if (GUI.Button(buttons[0], userInterface.wordsList[0], buttonGuiStyle))
                     {
                         pause = false;
                         Cursor.visible = false;
                         userInterface.Controllable = true;
                     }
-                    if (GUI.Button(buttons[1], "Настройки"))
+                    if (GUI.Button(buttons[1], userInterface.wordsList[1], buttonGuiStyle))
                         menuStatus = MenuStatus.Options;
-                    if (GUI.Button(buttons[2], "Выйти в главное меню"))
+                    if (GUI.Button(buttons[2], userInterface.wordsList[2], buttonGuiStyle))
                     {
                         if (gameObject.GetComponent<NetworkIdentity>().isServer)
                         {
@@ -92,13 +94,13 @@ public class PauseMenu : MonoBehaviour {
                     }
                     break;
                 case MenuStatus.Options:
-                    GUI.Label(buttons[0], "Качество графики:");
-                    l_quality = GUI.SelectionGrid(buttons[1], l_quality, qualitySelection, 3);
-                    GUI.Label(buttons[2], "Громкость музыки:");
+                    GUI.Label(buttons[0], userInterface.wordsList[3]);
+                    l_quality = GUI.SelectionGrid(buttons[1], l_quality, qualitySelection, 3, buttonGuiStyle);
+                    GUI.Label(buttons[2], userInterface.wordsList[4]);
                     l_musicLevel = GUI.HorizontalSlider(buttons[3], l_musicLevel, 0, 1);
-                    GUI.Label(buttons[4], "Громкость эффектов:");
+                    GUI.Label(buttons[4], userInterface.wordsList[5]);
                     l_effectsLevel = GUI.HorizontalSlider(buttons[5], l_effectsLevel, 0, 1);
-                    if (GUI.Button(buttons[6], "Принять"))
+                    if (GUI.Button(buttons[6], userInterface.wordsList[6], buttonGuiStyle))
                     {
                         quality = l_quality;
                         musicLevel = l_musicLevel;
@@ -107,7 +109,7 @@ public class PauseMenu : MonoBehaviour {
                         menuStatus = MenuStatus.General;
                         SetQuality();
                     }
-                    if (GUI.Button(buttons[7], "Назад"))
+                    if (GUI.Button(buttons[7], userInterface.wordsList[7], buttonGuiStyle))
                     {
                         l_quality = quality;
                         l_musicLevel = musicLevel;

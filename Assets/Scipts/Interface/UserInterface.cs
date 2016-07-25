@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using System.Collections.Generic;
 
 public class UserInterface : MonoBehaviour {
 
@@ -20,6 +21,55 @@ public class UserInterface : MonoBehaviour {
     GUIStyle guiStyle = new GUIStyle();
     Rect expRect, hpRect, armorRect;
     public int hp, armor, exp;
+    public List<string> wordsList = new List<string>();
+
+    void LoadLanguage()
+    {
+        int language = DataManager.LoadLang();
+        LanguageReader languageReader = GameObject.Find("NetworkManager").GetComponent<LanguageReader>();
+        wordsList = new List<string>();
+        //0
+        wordsList.Add(languageReader.langDict[language]["continue"]);
+        //1
+        wordsList.Add(languageReader.langDict[language]["options"]);
+        //2
+        wordsList.Add(languageReader.langDict[language]["exitToMainMenu"]);
+        //3
+        wordsList.Add(languageReader.langDict[language]["drawingQuality"]);
+        //4
+        wordsList.Add(languageReader.langDict[language]["musicVolume"]);
+        //5
+        wordsList.Add(languageReader.langDict[language]["effectsVolume"]);
+        //6
+        wordsList.Add(languageReader.langDict[language]["accept"]);
+        //7
+        wordsList.Add(languageReader.langDict[language]["back"]);
+        //8
+        wordsList.Add(languageReader.langDict[language]["low"]);
+        //9
+        wordsList.Add(languageReader.langDict[language]["middle"]);
+        //10
+        wordsList.Add(languageReader.langDict[language]["high"]);
+        //11
+        wordsList.Add(languageReader.langDict[language]["health"]);
+        //12
+        wordsList.Add(languageReader.langDict[language]["armor"]);
+        //13
+        wordsList.Add(languageReader.langDict[language]["exp"]);
+        //14
+        wordsList.Add(languageReader.langDict[language]["color"]);
+        //15
+        wordsList.Add(languageReader.langDict[language]["mouth"]);
+        //16
+        wordsList.Add(languageReader.langDict[language]["eyes"]);
+        //17
+        wordsList.Add(languageReader.langDict[language]["play"]);
+    }
+
+    void Awake()
+    {
+        LoadLanguage();
+    }
 
     void Start()
     {
@@ -37,11 +87,13 @@ public class UserInterface : MonoBehaviour {
         }
     }
 
+
+
     void OnGUI()
     {
-        GUI.Label(expRect, "EXP: " + exp, guiStyle);
-        GUI.Label(hpRect, "HP: " + hp, guiStyle);
-        GUI.Label(armorRect, "ARMOR: " + armor, guiStyle);
+        GUI.Label(expRect, wordsList[13] + " " + exp, guiStyle);
+        GUI.Label(hpRect, wordsList[11] + " " + hp, guiStyle);
+        GUI.Label(armorRect, wordsList[12] + " " + armor, guiStyle);
 
         if (Tab)
         if (exps != null)

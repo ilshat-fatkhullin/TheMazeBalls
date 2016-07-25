@@ -36,6 +36,29 @@ public class DataManager {
         }
     }
 
+    public static void SaveLang(int lang)
+    {
+        BinaryFormatter bf = new BinaryFormatter();
+        FileStream file = new FileStream(Application.persistentDataPath + "/language.dat", FileMode.OpenOrCreate);
+        bf.Serialize(file, lang);
+        file.Close();
+    }
+
+    public static int LoadLang()
+    {
+        if (File.Exists(Application.persistentDataPath + "/language.dat"))
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+            FileStream file = File.Open(Application.persistentDataPath + "/language.dat", FileMode.Open);
+            int settingsStruct = (int)bf.Deserialize(file);
+            file.Close();
+            return settingsStruct;
+        }
+        else
+        {
+            return 0;
+        }
+    }
 
     public static void SaveVars(float in_musicLevel, float in_effectsLevel, float in_sensetive, int in_qualityLevel, int in_crosshair, string nickname)
     {
@@ -55,7 +78,7 @@ public class DataManager {
     }
 
     public static Settings LoadVars()
-    {
+    {        
         if (File.Exists(Application.persistentDataPath + "/settings.dat"))
         {
             BinaryFormatter bf = new BinaryFormatter();
@@ -72,7 +95,7 @@ public class DataManager {
             settingsStruct.mouseSensetive = 1;
             settingsStruct.qualityLevel = 1;
             settingsStruct.nickname = "Player";
-            settingsStruct.crosshair = 0;
+            settingsStruct.crosshair = 1;
             return settingsStruct;
         }
     }

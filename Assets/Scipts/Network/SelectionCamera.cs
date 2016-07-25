@@ -11,6 +11,7 @@ public class SelectionCamera : NetworkBehaviour {
     int currentFlagIndex = 0;
     int smile = 0, eye = 0, background = 0;
     Texture[] flags;
+    UserInterface userInterface;
     GUIStyle guiStyle = new GUIStyle();
 
     Rect currentFlag, playButton,
@@ -36,18 +37,20 @@ public class SelectionCamera : NetworkBehaviour {
         currentFlag = new Rect(Screen.width - 4 * pixelX, pixelY, pixelY * 6, pixelY * 6);
         playButton = new Rect(Screen.width - 2 * pixelX, Screen.height - pixelY * 2, pixelX, pixelY);
 
-        backgroundScrollerRect = new Rect(pixelX, pixelY * 2, pixelX * 4, pixelY);
-        smileScrollerRect = new Rect(pixelX, pixelY * 4, pixelX * 4, pixelY);
-        eyeScrollerRect = new Rect(pixelX, pixelY * 6, pixelX * 4, pixelY);
+        backgroundScrollerRect = new Rect(pixelX * 3, pixelY * 2, pixelX * 2, pixelY);
+        smileScrollerRect = new Rect(pixelX * 3, pixelY * 4, pixelX * 2, pixelY);
+        eyeScrollerRect = new Rect(pixelX * 3, pixelY * 6, pixelX * 2, pixelY);
 
-        backgroundLabelRect = new Rect(pixelX, pixelY, pixelX * 4, pixelY);
-        smileLabelRect = new Rect(pixelX, pixelY * 3, pixelX * 4, pixelY);
-        eyeLabelRect = new Rect(pixelX, pixelY * 5, pixelX * 4, pixelY);
+        backgroundLabelRect = new Rect(pixelX * 3, pixelY, pixelX * 4, pixelY);
+        smileLabelRect = new Rect(pixelX * 3, pixelY * 3, pixelX * 4, pixelY);
+        eyeLabelRect = new Rect(pixelX * 3, pixelY * 5, pixelX * 4, pixelY);
 
         mapGenerator = GameObject.Find("SceneManager").GetComponent<MapGenerator>();
 
         guiStyle.fontSize = Convert.ToInt32(pixelY / 2);
         guiStyle.normal.textColor = Color.white;
+
+        userInterface = GameObject.Find("UserInterface").GetComponent<UserInterface>();
     }
 
     void Update()
@@ -65,13 +68,13 @@ public class SelectionCamera : NetworkBehaviour {
             smile = Convert.ToInt32(GUI.HorizontalSlider(smileScrollerRect, smile, 0, 4));
             eye = Convert.ToInt32(GUI.HorizontalSlider(eyeScrollerRect, eye, 0, 4));
 
-            GUI.Label(backgroundLabelRect, "Цвет:", guiStyle);
-            GUI.Label(smileLabelRect, "Глаза:", guiStyle);
-            GUI.Label(eyeLabelRect, "Рот:", guiStyle);
+            GUI.Label(backgroundLabelRect, userInterface.wordsList[14], guiStyle);
+            GUI.Label(smileLabelRect, userInterface.wordsList[16], guiStyle);
+            GUI.Label(eyeLabelRect, userInterface.wordsList[15], guiStyle);
 
             currentFlagIndex = eye + smile * 5 + background * 25;
 
-            if (GUI.Button(playButton, "Играть"))
+            if (GUI.Button(playButton, userInterface.wordsList[17]))
             {
                 Cursor.visible = false;
                 Play();
