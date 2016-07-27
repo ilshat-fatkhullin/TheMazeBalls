@@ -91,6 +91,8 @@
     <Compile Include="Assets\Scipts\Interface\PauseMenu.cs" />
     <Compile Include="Assets\Scipts\Interface\PlayersTab.cs" />
     <Compile Include="Assets\Scipts\Interface\UserInterface.cs" />
+    <Compile Include="Assets\Scipts\Navigation\PathElement.cs" />
+    <Compile Include="Assets\Scipts\Navigation\PathFinder.cs" />
     <Compile Include="Assets\Scipts\Network\FlagManager.cs" />
     <Compile Include="Assets\Scipts\Network\FlagsSynchronizer.cs" />
     <Compile Include="Assets\Scipts\Network\MapSynchronizer.cs" />

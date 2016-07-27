@@ -11,6 +11,7 @@ public class MazeNavigator : NetworkBehaviour {
     public Vector3 desiredVelocity;
     public float remainingDistance;
     public bool jump = false;
+    public bool leftRight = false;
     bool localJump = false;
 
     MapGenerator mapGeneratore;
