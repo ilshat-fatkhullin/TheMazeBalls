@@ -231,7 +231,7 @@ namespace Algorithms
             {
                 if (point1.X == point2.X)
                 {
-                    if (minimumIntersection1.Y <= point1.Y && point1.Y <= point2.Y || minimumIntersection1.Y >= point1.Y && point1.Y >= point2.Y)
+                    if (minimumIntersection1.Y <= point1.Y && minimumIntersection1.Y <= point2.Y || minimumIntersection1.Y >= point1.Y && minimumIntersection1.Y >= point2.Y)
                     {
                         minimumIntersection1 = null;
                         minimumIntersection2 = null;
@@ -240,7 +240,7 @@ namespace Algorithms
                 }
                 else if (point1.Y == point2.Y)
                 {
-                    if (minimumIntersection1.X <= point1.X && point1.X <= point2.X || minimumIntersection1.X >= point1.X && point1.X >= point2.X)
+                    if (minimumIntersection1.X <= point1.X && minimumIntersection1.X <= point2.X || minimumIntersection1.X >= point1.X && minimumIntersection1.X >= point2.X)
                     {
                         minimumIntersection1 = null;
                         minimumIntersection2 = null;
@@ -446,75 +446,7 @@ namespace Algorithms
                 }
             }
         }
-
-        public void Solve()
-        {
-            Random random = new Random();
-
-            Point2D point;
-
-            do
-            {
-                point = new Point2D(random.Next(0, Width), random.Next(0, Height));
-            } while (_Field[point.X, point.Y] == MazeCell.Wall);
-
-            Queue<Point2D> points = new Queue<Point2D>();
-            points.Enqueue(point);
-            _Field[point.X, point.Y] = MazeCell.Visited;
-
-            do
-            {
-                Point2D newPoint;
-
-                point = points.Dequeue();
-
-                if (point.X > 0)
-                {
-                    newPoint = new Point2D(point.X - 1, point.Y);
-
-                    if (_Field[newPoint.X, newPoint.Y] == MazeCell.Void)
-                    {
-                        points.Enqueue(newPoint);
-                        _Field[newPoint.X, newPoint.Y] = MazeCell.Visited;
-                    }
-                }
-
-                if (point.X < Width - 1)
-                {
-                    newPoint = new Point2D(point.X + 1, point.Y);
-
-                    if (_Field[newPoint.X, newPoint.Y] == MazeCell.Void)
-                    {
-                        points.Enqueue(newPoint);
-                        _Field[newPoint.X, newPoint.Y] = MazeCell.Visited;
-                    }
-                }
-
-                if (point.Y > 0)
-                {
-                    newPoint = new Point2D(point.X, point.Y - 1);
-
-                    if (_Field[newPoint.X, newPoint.Y] == MazeCell.Void)
-                    {
-                        points.Enqueue(newPoint);
-                        _Field[newPoint.X, newPoint.Y] = MazeCell.Visited;
-                    }
-                }
-
-                if (point.Y < Height - 1)
-                {
-                    newPoint = new Point2D(point.X, point.Y + 1);
-
-                    if (_Field[newPoint.X, newPoint.Y] == MazeCell.Void)
-                    {
-                        points.Enqueue(newPoint);
-                        _Field[newPoint.X, newPoint.Y] = MazeCell.Visited;
-                    }
-                }
-
-            } while (points.Count > 0);
-        }
-
+        
         private void Generate()
         {
             Random random = new Random();
