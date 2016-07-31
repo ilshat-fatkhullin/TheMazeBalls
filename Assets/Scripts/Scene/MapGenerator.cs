@@ -12,6 +12,8 @@ public class MapGenerator : NetworkBehaviour {
     public GameObject[] ends;
     List<Point2D>[] floorPoints;
     int[] floorIndexes;
+    [SyncVar]
+    string array;
 
     void Start () {
         map = new Map();
@@ -25,6 +27,10 @@ public class MapGenerator : NetworkBehaviour {
                 NetworkServer.Spawn(ends[i]);
             }
             GenerateAsServer();
+        }
+        else
+        {
+            GenerateAsClient();
         }
     }
 
@@ -87,11 +93,15 @@ public class MapGenerator : NetworkBehaviour {
 
     public void GenerateAsClient()
     {
+        Clear();
+        UpdateArrayFromString(array);
         map.CreateMap();
     }
 
     public void GenerateAsServer()
     {
+        Clear();
+
         for (int j = 0; j < Map.YDemension; j++)
         {
 			matrix[j] = new Maze(Map.XDemension / 2, Map.ZDemension / 2);
@@ -115,6 +125,8 @@ public class MapGenerator : NetworkBehaviour {
         MakeWholes();
         map.CreateMap();
         MakeBonuses();
+
+        array = GetStringFromArray();
     }
 
     public Vector3 GetRandomFloor(int level)
@@ -173,7 +185,7 @@ public class MapGenerator : NetworkBehaviour {
     private void MakeWholes()
     {
         for (int l = 0; l < Map.YDemension; l++)
-        for (int i = 0; i < Map.WholesCount; i++)
+        for (int i = 0; i < (Map.WholesCount / 3) * (l + 1); i++)
         {
             Point2D posPoint = floorPoints[l][floorIndexes[l]];
             floorIndexes[l]++;

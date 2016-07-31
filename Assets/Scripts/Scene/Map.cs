@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class Map {
     public const int XDemension = 21, YDemension = 3, ZDemension = 21,
                      ScaleXZ = 20, ScaleFloorY = 5, LevelHeight = 30,
-                     WholesCount = (XDemension * YDemension) / 5, EndsCount = (XDemension * ZDemension) / 50, BonusesCount = (XDemension * YDemension) / 10;
+                     WholesCount = (XDemension * YDemension) / 2, EndsCount = (XDemension * ZDemension) / 50, BonusesCount = (XDemension * YDemension) / 10;
     public enum ObjectElementType { Void, Floor, Wall, Start, End};
     public enum UnitElementType { Void, Unit };
     public ObjectElementType[,,]  map = new ObjectElementType[XDemension, YDemension, ZDemension];
@@ -25,6 +25,11 @@ public class Map {
                 {
                     CreateMapObject(i, j, k);
                 }
+        for (int i = 0; i < map.GetLength(0); i++)
+            for (int j = 0; j < map.GetLength(2); j++)
+            {
+                CreateUpside(i, j);
+            }
     }
 
     public void ClearMap()
@@ -37,6 +42,14 @@ public class Map {
                     GameObject.Destroy(mapObjects[i, j, k]);
                     mapObjects[i, j, k] = null;
                 }
+    }
+
+    public void CreateUpside(int i, int j)
+    {
+        GameObject upside = GameObject.Instantiate(Resources.Load("Glass")) as GameObject;
+
+        upside.transform.localScale = new Vector3(ScaleXZ, ScaleFloorY, ScaleXZ);
+        upside.transform.position = new Vector3(ScaleXZ * i, (LevelHeight * Map.YDemension) + (ScaleFloorY / 2), ScaleXZ * j);
     }
 
     public void CreateMapObject(int i, int j, int k)

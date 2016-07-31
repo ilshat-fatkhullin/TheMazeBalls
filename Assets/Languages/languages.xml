@@ -42,6 +42,7 @@
     <color>Color:</color>
     <mouth>Mouth:</mouth>
     <eyes>Eyes:</eyes>
+    <time>Time:</time>
   </language>
   <language>
     <name>Русский</name>
@@ -85,5 +86,6 @@
     <color>Цвет:</color>
     <mouth>Рот:</mouth>
     <eyes>Глаза:</eyes>
+    <time>Время:</time>
   </language>
 </languages>

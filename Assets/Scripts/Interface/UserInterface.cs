@@ -17,11 +17,14 @@ public class UserInterface : MonoBehaviour {
     public bool Controllable = true;
     public Exp[] exps;
     Rect[] nicknamesRect = new Rect[8];
+    Rect[] middleNicknamesRect = new Rect[8];
     Rect[] expsRect = new Rect[8];
+    Rect[] middleExpsRect = new Rect[8];
     GUIStyle guiStyle = new GUIStyle();
-    Rect expRect, hpRect, armorRect;
+    Rect expRect, timeRect, hpRect, armorRect;
     public int hp, armor, exp;
     public List<string> wordsList = new List<string>();
+    RoundController roundController;
 
     void LoadLanguage()
     {
@@ -64,6 +67,8 @@ public class UserInterface : MonoBehaviour {
         wordsList.Add(languageReader.langDict[language]["eyes"]);
         //17
         wordsList.Add(languageReader.langDict[language]["play"]);
+        //18
+        wordsList.Add(languageReader.langDict[language]["time"]);
     }
 
     void Awake()
@@ -75,15 +80,19 @@ public class UserInterface : MonoBehaviour {
     {
         float pixel = Screen.height / 20;
         expRect = new Rect(pixel, pixel, pixel * 4, pixel);
+        timeRect = new Rect(pixel, pixel * 2.5F, pixel * 4, pixel);
         armorRect = new Rect(pixel, Screen.height - pixel * 4, pixel * 4, pixel);
         hpRect = new Rect(pixel, Screen.height - pixel * 2, pixel * 4, pixel);
         guiStyle.fontSize = Convert.ToInt32(pixel);
         guiStyle.normal.textColor = Color.white;
+        roundController = GameObject.Find("SceneManager").GetComponent<RoundController>();
 
         for (int i = 0; i < nicknamesRect.GetLength(0); i++)
         {
             nicknamesRect[i] = new Rect(Screen.width - pixel * 8, pixel + pixel * i, pixel * 5, pixel);
+            middleNicknamesRect[i] = new Rect((Screen.width / 2) - pixel * 5, pixel + pixel * i, pixel * 5, pixel);
             expsRect[i] = new Rect(Screen.width - pixel * 3, pixel + pixel * i, pixel * 3, pixel);
+            middleExpsRect[i] = new Rect((Screen.width / 2), pixel + pixel * i, pixel * 3, pixel);
         }
     }
 
@@ -91,17 +100,30 @@ public class UserInterface : MonoBehaviour {
 
     void OnGUI()
     {
-        GUI.Label(expRect, wordsList[13] + " " + exp, guiStyle);
-        GUI.Label(hpRect, wordsList[11] + " " + hp, guiStyle);
-        GUI.Label(armorRect, wordsList[12] + " " + armor, guiStyle);
+        if (!roundController.IsRoundEnd)
+        {
+            GUI.Label(expRect, wordsList[13] + " " + exp, guiStyle);
+            GUI.Label(timeRect, wordsList[18] + " " + (roundController.Time / 60) + ":" + (roundController.Time % 60), guiStyle);
+            GUI.Label(hpRect, wordsList[11] + " " + hp, guiStyle);
+            GUI.Label(armorRect, wordsList[12] + " " + armor, guiStyle);
 
-        if (Tab)
-        if (exps != null)
-            for (int i = 0; i < exps.GetLength(0) && i < nicknamesRect.GetLength(0); i++)
-            {
-                GUI.Label(nicknamesRect[i], exps[i].nickname, guiStyle);
-                GUI.Label(expsRect[i], Convert.ToString(exps[i].exp), guiStyle);
-            }
+            if (Tab)
+                if (exps != null)
+                    for (int i = 0; i < exps.GetLength(0) && i < nicknamesRect.GetLength(0); i++)
+                    {
+                        GUI.Label(nicknamesRect[i], exps[i].nickname, guiStyle);
+                        GUI.Label(expsRect[i], Convert.ToString(exps[i].exp), guiStyle);
+                    }
+        }
+        else
+        {
+            if (exps != null)
+                for (int i = 0; i < exps.GetLength(0) && i < nicknamesRect.GetLength(0); i++)
+                {
+                    GUI.Label(middleNicknamesRect[i], exps[i].nickname, guiStyle);
+                    GUI.Label(middleExpsRect[i], Convert.ToString(exps[i].exp), guiStyle);
+                }
+        }
     }
 
     void Update () {
