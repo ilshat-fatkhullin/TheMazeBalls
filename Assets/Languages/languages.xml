@@ -38,7 +38,7 @@
     <exitToMainMenu>Exit to the main menu</exitToMainMenu>
     <health>Health:</health>
     <armor>Armor:</armor>
-    <exp>Experience:</exp>
+    <exp>Score:</exp>
     <color>Color:</color>
     <mouth>Mouth:</mouth>
     <eyes>Eyes:</eyes>
@@ -83,7 +83,7 @@
     <exitToMainMenu>Выйти в главное меню</exitToMainMenu>
     <health>Здоровье:</health>
     <armor>Броня:</armor>
-    <exp>Опыт:</exp>
+    <exp>Очки:</exp>
     <color>Цвет:</color>
     <mouth>Рот:</mouth>
     <eyes>Глаза:</eyes>

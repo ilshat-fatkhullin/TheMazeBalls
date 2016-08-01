@@ -7,7 +7,7 @@ using Algorithms;
 
 public class MazeNavigator : NetworkBehaviour {
 
-    const float JumpDelay = 0.65F;
+    const float JumpDelay = 0.1F;
 
     public Vector3 desiredVelocity;
     public float remainingDistance;

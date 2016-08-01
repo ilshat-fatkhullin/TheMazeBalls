@@ -4,7 +4,7 @@ using System.Collections;
 
 public class AI : NetworkBehaviour {
     MazeNavigator mazeNavigator;
-    float punchDistance = 6, fireDistance = 50, speed = 90, maxSpeed = 20;
+    float punchDistance = 6, fireDistance = 50, speed = 120, maxSpeed = 40;
     Rigidbody _rigidbody;
     public Transform enemie;
     AIWeaponController weaponController;

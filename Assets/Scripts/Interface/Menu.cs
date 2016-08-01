@@ -317,6 +317,17 @@ public class Menu : MonoBehaviour {
         menuStatus = MenuStatus.Options;
     }
 
+    private string SetStringToNicknameFormat(string val)
+    {
+        string[] val_array = val.Split('|', '%');
+        string returnedArray = "";
+        for (int i = 0; i < val_array.GetLength(0); i++)
+        {
+            returnedArray += val_array[i];
+        }
+        return returnedArray;
+    }
+
     void Submit()
     {
         quality = l_quality;
@@ -324,6 +335,7 @@ public class Menu : MonoBehaviour {
         effectsLevel = l_effectsLevel;
         sensetive = l_sensetive;
         crosshair = l_crosshair;
+        l_nickname = 
         nickname = l_nickname;
         if (language != l_language)
         {

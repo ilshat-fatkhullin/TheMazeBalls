@@ -4,21 +4,25 @@ using System.Collections;
 
 public class AIFlashlightController : NetworkBehaviour
 {
+    [SyncVar]
     bool isFlashlightEnabled = true;
     Light flashlight;
     const float UpdateTime = 60;
     public float delayTime = 0;
+    SceneStyleController sceneController;
 
     void Start()
     {
         flashlight = gameObject.GetComponentInChildren<Light>();
-    }
-
-    [ClientRpc]
-    void RpcChangeBool(bool val)
-    {
-        if (!isServer)
-        isFlashlightEnabled = val;
+        sceneController = GameObject.Find("SceneManager").GetComponent<SceneStyleController>();
+        if (!sceneController.isDarkness)
+        {
+            isFlashlightEnabled = false;
+        }
+        else
+        {
+            isFlashlightEnabled = Random.Range(0, 3) == 0;
+        }
     }
 
     void Update()
@@ -31,7 +35,10 @@ public class AIFlashlightController : NetworkBehaviour
                 if (Random.Range(0, 3) == 0)
                 {
                     isFlashlightEnabled = !isFlashlightEnabled;
-                    RpcChangeBool(isFlashlightEnabled);
+                }
+                if (!sceneController.isDarkness)
+                {
+                    isFlashlightEnabled = false;
                 }
             }
         }

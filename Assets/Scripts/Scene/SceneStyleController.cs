@@ -4,6 +4,9 @@ using UnityEngine.Networking;
 
 public class SceneStyleController : NetworkBehaviour {
 
+    public bool isDarkness = false;
+    public Material darkSkybox;
+
     [ClientRpc]
     void RpcChangeScene(bool val)
     {
@@ -25,6 +28,8 @@ public class SceneStyleController : NetworkBehaviour {
 
     void MakeDarkness()
     {
-        RenderSettings.ambientIntensity = 0.1F;
+        RenderSettings.ambientIntensity = 0.05F;
+        RenderSettings.skybox = darkSkybox;
+        isDarkness = true;
     }
 }

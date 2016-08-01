@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class Map {
     public const int XDemension = 21, YDemension = 3, ZDemension = 21,
                      ScaleXZ = 20, ScaleFloorY = 5, LevelHeight = 30,
-                     WholesCount = (XDemension * YDemension) / 2, EndsCount = (XDemension * ZDemension) / 50, BonusesCount = (XDemension * YDemension) / 10;
+                     WholesCount = (XDemension * YDemension) / 1, EndsCount = (XDemension * ZDemension) / 50, BonusesCount = (XDemension * YDemension) / 10;
     public enum ObjectElementType { Void, Floor, Wall, Teleport, TeleportationPlace};
     public enum UnitElementType { Void, Unit };
     public ObjectElementType[,,]  map = new ObjectElementType[XDemension, YDemension, ZDemension];

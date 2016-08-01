@@ -5,7 +5,7 @@ using UnityEngine.Networking;
 public class MovementController : NetworkBehaviour {
 
     Rigidbody _rigidbody;
-    float speed = 60, jumpForce = 60, k_GroundRayLength = 3, maxSpeed = 30;
+    float speed = 120, jumpForce = 60, k_GroundRayLength = 3, maxSpeed = 40;
     bool grounded;
     public bool jump;
     public Vector3 movement = Vector3.zero;
