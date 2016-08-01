@@ -15,7 +15,7 @@ public class MazeNavigator : NetworkBehaviour {
     public bool leftRight = false;
     bool localJump = false;
 
-    MapGenerator mapGeneratore;
+    MapGenerator mapGenerator;
 
     private bool TestRange(Vector3 pos)
     {
@@ -39,7 +39,7 @@ public class MazeNavigator : NetworkBehaviour {
     {
         if (isServer)
         {
-            mapGeneratore = GameObject.Find("SceneManager").GetComponent<MapGenerator>();
+            mapGenerator = GameObject.Find("SceneManager").GetComponent<MapGenerator>();
         }
     }
 
@@ -71,12 +71,12 @@ public class MazeNavigator : NetworkBehaviour {
             {
                 if (TestRange(currentPos))
                 {
-                    mapGeneratore.map.unitMap[x, y, z] = Map.UnitElementType.Unit;
+                    mapGenerator.map.unitMap[x, y, z] = Map.UnitElementType.Unit;
                 }
 
                 if (TestRange(lastPos))
                 {
-                    mapGeneratore.map.unitMap[(int)lastPos.x, (int)lastPos.y, (int)lastPos.z] = Map.UnitElementType.Void;
+                    mapGenerator.map.unitMap[(int)lastPos.x, (int)lastPos.y, (int)lastPos.z] = Map.UnitElementType.Void;
                 }
 
                 if (TestRange(currentPos))
@@ -93,7 +93,7 @@ public class MazeNavigator : NetworkBehaviour {
                     int x2 = currentDirection.X + x;
                     int z2 = currentDirection.Y + z;
 
-                    localJump = mapGeneratore.map.map[x2, y, z2] == Map.ObjectElementType.Void || mapGeneratore.map.unitMap[x2, y, z2] == Map.UnitElementType.Unit;
+                    localJump = mapGenerator.map.map[x2, y, z2] == Map.ObjectElementType.Void || mapGenerator.map.unitMap[x2, y, z2] == Map.UnitElementType.Unit;
                     if (localJump)
                     {
                         jumpStartTime = Time.time;
@@ -116,13 +116,13 @@ public class MazeNavigator : NetworkBehaviour {
         Point2D startPoint = new Point2D(x, z);
         int length = int.MaxValue;
         int index = 0;
-        for (int i = 0; i < mapGeneratore.ends.GetLength(0); i++)
+        for (int i = 0; i < mapGenerator.teleports.Count; i++)
         {
-            Vector3 aimPos = GetClosestPoint(mapGeneratore.ends[i].transform.position);
+            Vector3 aimPos = GetClosestPoint(mapGenerator.teleports[i].transform.position);
             if (aimPos.y == y)
             {
                 aimPoint = new Point2D(RoundFloat(aimPos.x), RoundFloat(aimPos.z));
-                int newLength = mapGeneratore.matrix[y].GetLength(aimPoint, startPoint);
+                int newLength = mapGenerator.matrix[y].GetLength(aimPoint, startPoint);
                 if (newLength < length)
                 {
                     index = i;
@@ -131,10 +131,10 @@ public class MazeNavigator : NetworkBehaviour {
             }
         }
 
-        Vector3 aimPos2 = GetClosestPoint(mapGeneratore.ends[index].transform.position);
+        Vector3 aimPos2 = GetClosestPoint(mapGenerator.teleports[index].transform.position);
         aimPoint = new Point2D(RoundFloat(aimPos2.x), RoundFloat(aimPos2.z));
 
-        Point2D path = mapGeneratore.matrix[y].FindNext(startPoint, aimPoint);
+        Point2D path = mapGenerator.matrix[y].FindNext(startPoint, aimPoint);
         if (path != null)
         {
             return new Point2D(path.X - x, path.Y - z);
@@ -157,16 +157,16 @@ public class MazeNavigator : NetworkBehaviour {
     {
         int i = 0;
         if (TestRange(new Vector3(x + 1, y, z)))
-            if (mapGeneratore.map.map[x + 1, y, z] != Map.ObjectElementType.Wall)
+            if (mapGenerator.map.map[x + 1, y, z] != Map.ObjectElementType.Wall)
             i++;
         if (TestRange(new Vector3(x - 1, y, z)))
-            if (mapGeneratore.map.map[x - 1, y, z] != Map.ObjectElementType.Wall)
+            if (mapGenerator.map.map[x - 1, y, z] != Map.ObjectElementType.Wall)
             i++;
         if (TestRange(new Vector3(x, y, z + 1)))
-            if (mapGeneratore.map.map[x, y, z + 1] != Map.ObjectElementType.Wall)
+            if (mapGenerator.map.map[x, y, z + 1] != Map.ObjectElementType.Wall)
             i++;
         if (TestRange(new Vector3(x, y, z - 1)))
-            if (mapGeneratore.map.map[x, y, z - 1] != Map.ObjectElementType.Wall)
+            if (mapGenerator.map.map[x, y, z - 1] != Map.ObjectElementType.Wall)
             i++;
 
         return i <= 1;
@@ -178,16 +178,16 @@ public class MazeNavigator : NetworkBehaviour {
     {        
         if (currentRandomTarget == null)
         {
-            Vector3 currentRandomVector = mapGeneratore.GetRandomFloor(Map.YDemension - 1);
+            Vector3 currentRandomVector = mapGenerator.GetRandomFloor(Map.YDemension - 1);
             currentRandomTarget = new Point2D(RoundFloat(currentRandomVector.x), RoundFloat(currentRandomVector.z));
         }
 
         Point2D startPoint = new Point2D(x, z);
-        Point2D path = mapGeneratore.matrix[y].FindNext(startPoint, currentRandomTarget);
+        Point2D path = mapGenerator.matrix[y].FindNext(startPoint, currentRandomTarget);
 
         if (comparer.Equals(path, currentRandomTarget))
         {
-            Vector3 currentRandomVector = mapGeneratore.GetRandomFloor(Map.YDemension - 1);
+            Vector3 currentRandomVector = mapGenerator.GetRandomFloor(Map.YDemension - 1);
             currentRandomTarget = new Point2D(RoundFloat(currentRandomVector.x), RoundFloat(currentRandomVector.z));
         }
 
@@ -209,19 +209,19 @@ public class MazeNavigator : NetworkBehaviour {
             z1 = false;
 
         if (TestRange(new Vector3(x + 1, y, z)))
-            if (mapGeneratore.map.map[x + 1, y, z] != Map.ObjectElementType.Wall)
+            if (mapGenerator.map.map[x + 1, y, z] != Map.ObjectElementType.Wall)
                 x0 = true;
 
         if (TestRange(new Vector3(x - 1, y, z)))
-            if (mapGeneratore.map.map[x - 1, y, z] != Map.ObjectElementType.Wall)
+            if (mapGenerator.map.map[x - 1, y, z] != Map.ObjectElementType.Wall)
                 x1 = true;
 
         if (TestRange(new Vector3(x, y, z + 1)))
-            if (mapGeneratore.map.map[x, y, z + 1] != Map.ObjectElementType.Wall)
+            if (mapGenerator.map.map[x, y, z + 1] != Map.ObjectElementType.Wall)
                 z0 = true;
 
         if (TestRange(new Vector3(x, y, z - 1)))
-            if (mapGeneratore.map.map[x, y, z - 1] != Map.ObjectElementType.Wall)
+            if (mapGenerator.map.map[x, y, z - 1] != Map.ObjectElementType.Wall)
                 z1 = true;
 
         return ((x0 || x1) && (z0 || z1));

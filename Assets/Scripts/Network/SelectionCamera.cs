@@ -107,6 +107,8 @@ public class SelectionCamera : NetworkBehaviour {
         if (nickname != null)
         character.GetComponent<Exp>().nickname = nickname;
 
+        GameObject.Find("UserInterface").GetComponent<PlayersTab>().UpdateExps();
+
         NetworkServer.Destroy(gameObject);
     }
 }

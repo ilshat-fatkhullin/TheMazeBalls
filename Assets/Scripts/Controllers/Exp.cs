@@ -15,6 +15,9 @@ public class Exp : NetworkBehaviour {
     void Start()
     {
         userInterface = GameObject.Find("UserInterface").GetComponent<UserInterface>();
+        if (isServer)
+        if (tag == "AI")
+            nickname = userInterface.GetComponent<NameContainer>().GetRandomName();
     }
 
     void Update() {

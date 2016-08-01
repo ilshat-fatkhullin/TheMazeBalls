@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class RoundController : NetworkBehaviour {
 
-    const int MaxTime = 30;
+    const int MaxTime = 300;
 
     [SyncVar]
     public int Time = MaxTime;
@@ -49,25 +49,22 @@ public class RoundController : NetworkBehaviour {
     void RoundEnd()
     {
         IsRoundEnd = true;
-        mapGenerator.GenerateAsServer();
     }
 
     void Reload()
     {
         IsRoundEnd = false;
         startTime = UnityEngine.Time.time;
-        RpcUpdateMap();
+        mapGenerator.GenerateAsServer();
         Respawner[] respawners = GameObject.FindObjectsOfType<Respawner>();
         for (int i = 0; i < respawners.GetLength(0); i++)
         {
             respawners[i].Respawn();
         }
-    }
-
-    [ClientRpc]
-    void RpcUpdateMap()
-    {
-        if (!isServer)
-        mapGenerator.GenerateAsClient();
+        Exp[] exps = GameObject.FindObjectsOfType<Exp>();
+        for (int i = 0; i < exps.GetLength(0); i++)
+        {
+            exps[i].exp = 0;
+        }
     }
 }

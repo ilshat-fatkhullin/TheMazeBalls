@@ -104,6 +104,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Languages\languages.xml" />
+    <None Include="Assets\Names\names.txt" />
     <None Include="Assets\Standard Assets\Characters\FirstPersonCharacter\FirstPersonCharacterGuidelines.txt" />
     <None Include="Assets\Standard Assets\Characters\RollerBall\RollerBallGuidelines.txt" />
     <None Include="Assets\Standard Assets\Characters\ThirdPersonCharacter\ThirdPersonCharacterGuidelines.txt" />

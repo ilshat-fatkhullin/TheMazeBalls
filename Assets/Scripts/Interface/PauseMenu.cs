@@ -6,7 +6,7 @@ using System;
 using UnityEngine.Networking;
 using System.Collections.Generic;
 
-public class PauseMenu : MonoBehaviour {
+public class PauseMenu : NetworkBehaviour {
 
     UserInterface userInterface;
     bool pause = false;
@@ -23,6 +23,11 @@ public class PauseMenu : MonoBehaviour {
     public Texture menuBackground;
     NetworkManager networkManager;
     public GUIStyle buttonGuiStyle;
+
+    void OnPlayerConnected(NetworkPlayer player)
+    {
+        Time.timeScale = 1;
+    }
 
     void Start () {
         userInterface = gameObject.GetComponent<UserInterface>();
@@ -54,6 +59,7 @@ public class PauseMenu : MonoBehaviour {
         networkManager = GameObject.Find("NetworkManager").GetComponent<NetworkManager>();
 
         qualitySelection = new string[] { userInterface.wordsList[8], userInterface.wordsList[9], userInterface.wordsList[10] };
+        Time.timeScale = 1;
     }
 	
 	void Update () {
@@ -62,6 +68,17 @@ public class PauseMenu : MonoBehaviour {
             pause = !pause;
             Cursor.visible = pause;
             userInterface.Controllable = !pause;
+            if (networkManager.numPlayers == 1)
+            {
+                if (pause)
+                {
+                    Time.timeScale = 0;
+                }
+                else
+                {
+                    Time.timeScale = 1;
+                }
+            }
         }
 	}
 

@@ -43,6 +43,7 @@
     <mouth>Mouth:</mouth>
     <eyes>Eyes:</eyes>
     <time>Time:</time>
+    <roundIsOver>Round is over</roundIsOver>
   </language>
   <language>
     <name>Русский</name>
@@ -87,5 +88,6 @@
     <mouth>Рот:</mouth>
     <eyes>Глаза:</eyes>
     <time>Время:</time>
+    <roundIsOver>Раунд окончен</roundIsOver>
   </language>
 </languages>

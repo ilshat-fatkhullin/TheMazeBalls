@@ -9,28 +9,37 @@ public class MapGenerator : NetworkBehaviour {
 
     public Map map;
 	public Maze[] matrix;
-    public GameObject[] ends;
     List<Point2D>[] floorPoints;
+    List<GameObject> bonuses = new List<GameObject>();
+    public List<GameObject> teleports = new List<GameObject>();
     int[] floorIndexes;
     [SyncVar]
     string array;
 
     void Start () {
         map = new Map();
-		matrix = new Maze[Map.YDemension];
+        matrix = new Maze[Map.YDemension];
         if (isServer)
         {
-            ends = new GameObject[(Map.YDemension - 1) * Map.EndsCount];
-            for (int i = 0; i < ends.GetLength(0); i++)
-            {
-                ends[i] = GameObject.Instantiate(Resources.Load("End")) as GameObject;
-                NetworkServer.Spawn(ends[i]);
-            }
             GenerateAsServer();
         }
         else
         {
             GenerateAsClient();
+        }
+    }
+
+    string lastArray = "";
+
+    void Update()
+    {
+        if (!isServer)
+        {
+            if (lastArray != array)
+            {
+                GenerateAsClient();
+                lastArray = array;
+            }
         }
     }
 
@@ -53,10 +62,10 @@ public class MapGenerator : NetworkBehaviour {
                         case Map.ObjectElementType.Void:
                             returned_string += "v";
                             break;
-                        case Map.ObjectElementType.Start:
+                        case Map.ObjectElementType.Teleport:
                             returned_string += "s";
                             break;
-                        case Map.ObjectElementType.End:
+                        case Map.ObjectElementType.TeleportationPlace:
                             returned_string += "e";
                             break;
                     }
@@ -80,14 +89,16 @@ public class MapGenerator : NetworkBehaviour {
                     if (cur_ch == 'v')
                         map.map[i, j, k] = Map.ObjectElementType.Void;
                     if (cur_ch == 's')
-                        map.map[i, j, k] = Map.ObjectElementType.Start;
+                        map.map[i, j, k] = Map.ObjectElementType.Teleport;
                     if (cur_ch == 'e')
-                        map.map[i, j, k] = Map.ObjectElementType.End;
+                        map.map[i, j, k] = Map.ObjectElementType.TeleportationPlace;
                 }
     }
 
     public void Clear()
     {
+        ClearTeleports();
+        ClearBonuses();
         map.ClearMap();
     }
 
@@ -101,6 +112,9 @@ public class MapGenerator : NetworkBehaviour {
     public void GenerateAsServer()
     {
         Clear();
+
+        map = new Map();
+        matrix = new Maze[Map.YDemension];
 
         for (int j = 0; j < Map.YDemension; j++)
         {
@@ -121,10 +135,10 @@ public class MapGenerator : NetworkBehaviour {
         }
 
         FillFloorList();
-        ReplaceEnds();
-        MakeWholes();
+        CreateTeleports();
+        MarkHoles();
         map.CreateMap();
-        MakeBonuses();
+        CreateBonuses();
 
         array = GetStringFromArray();
     }
@@ -182,7 +196,7 @@ public class MapGenerator : NetworkBehaviour {
             }
     }
 
-    private void MakeWholes()
+    private void MarkHoles()
     {
         for (int l = 0; l < Map.YDemension; l++)
         for (int i = 0; i < (Map.WholesCount / 3) * (l + 1); i++)
@@ -193,19 +207,35 @@ public class MapGenerator : NetworkBehaviour {
         }
     }
 
-    private void MakeBonuses()
+    private void CreateBonuses()
     {
-        for (int j = 0; j < 3; j++)
-        for (int l = 0; l < Map.YDemension; l++)
-            for (int i = 0; i < Map.BonusesCount; i++)
+        if (isServer)
+        {
+            for (int j = 0; j < 3; j++)
+                for (int l = 0; l < Map.YDemension; l++)
+                    for (int i = 0; i < Map.BonusesCount; i++)
+                    {
+                        Point2D posPoint = floorPoints[l][floorIndexes[l]];
+                        floorIndexes[l]++;
+                        Vector3 bonusPos = new Vector3(posPoint.X * Map.ScaleXZ, l * Map.LevelHeight + Map.ScaleFloorY + 2.5F, posPoint.Y * Map.ScaleXZ);
+                        GameObject bonus = GameObject.Instantiate(Resources.Load("Bonus" + j)) as GameObject;
+                        bonus.transform.position = bonusPos;
+                        NetworkServer.Spawn(bonus);
+                        bonuses.Add(bonus);
+                    }
+        }
+    }
+
+    private void ClearBonuses()
+    {
+        if (isServer)
+        {
+            for (int i = 0; i < bonuses.Count; i++)
             {
-                    Point2D posPoint = floorPoints[l][floorIndexes[l]];
-                    floorIndexes[l]++;
-                    Vector3 bonusPos = new Vector3(posPoint.X * Map.ScaleXZ, l * Map.LevelHeight + Map.ScaleFloorY + 2.5F, posPoint.Y * Map.ScaleXZ);
-                    GameObject bonus = GameObject.Instantiate(Resources.Load("Bonus" + j)) as GameObject;
-                    bonus.transform.position = bonusPos;
-                    NetworkServer.Spawn(bonus);
+                NetworkServer.Destroy(bonuses[i]);
             }
+            bonuses.Clear();
+        }
     }
 
     private void MakeExit()
@@ -246,19 +276,38 @@ public class MapGenerator : NetworkBehaviour {
         NetworkServer.Spawn(bonus);
     }
 
-    private void ReplaceEnds()
+    private void CreateTeleports()
     {
-        for (int l = 0; l < Map.YDemension - 1; l++)
-            for (int i = 0; i < Map.EndsCount; i++)
+        if (isServer)
+        {
+            for (int l = 0; l < Map.YDemension - 1; l++)
+                for (int i = 0; i < Map.EndsCount; i++)
+                {
+                    Point2D posPoint = floorPoints[l][floorIndexes[l]];
+                    floorIndexes[l]++;
+                    map.map[posPoint.X, l, posPoint.Y] = Map.ObjectElementType.Teleport;
+                    map.map[posPoint.X, l + 1, posPoint.Y] = Map.ObjectElementType.TeleportationPlace;
+                    for (int k = 0; k < floorPoints[l + 1].Count; k++)
+                        if (floorPoints[l + 1][k].X == posPoint.X && floorPoints[l + 1][k].Y == posPoint.Y)
+                            floorPoints[l + 1].RemoveAt(k);
+
+                    GameObject teleport = GameObject.Instantiate(Resources.Load("Teleport")) as GameObject;
+                    teleport.transform.position = new Vector3(Map.ScaleXZ * posPoint.X, Map.LevelHeight * l + Map.ScaleFloorY, Map.ScaleXZ * posPoint.Y);
+                    NetworkServer.Spawn(teleport);
+                    teleports.Add(teleport);
+                }
+        }
+    }
+
+    private void ClearTeleports()
+    {
+        if (isServer)
+        {
+            for (int i = 0; i < teleports.Count; i++)
             {
-                Point2D posPoint = floorPoints[l][floorIndexes[l]];
-                floorIndexes[l]++;
-                map.map[Convert.ToInt32(posPoint.X), l, Convert.ToInt32(posPoint.Y)] = Map.ObjectElementType.Start;
-                map.map[Convert.ToInt32(posPoint.X), l + 1, Convert.ToInt32(posPoint.Y)] = Map.ObjectElementType.End;
-                for (int k = 0; k < floorPoints[l+1].Count; k++)
-                    if (floorPoints[l + 1][k].X == posPoint.X && floorPoints[l + 1][k].Y == posPoint.Y)
-                    floorPoints[l + 1].RemoveAt(k);
-                ends[l * Map.EndsCount + i].transform.position = new Vector3(posPoint.X * Map.ScaleXZ, (l * Map.LevelHeight) + Map.ScaleFloorY, posPoint.Y * Map.ScaleXZ);
+                NetworkServer.Destroy(teleports[i]);
             }
+            teleports.Clear();
+        }
     }
 }

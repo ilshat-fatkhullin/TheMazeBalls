@@ -15,13 +15,14 @@ public class UserInterface : MonoBehaviour {
     public bool Tab;
     public bool Flashlight;
     public bool Controllable = true;
-    public Exp[] exps;
-    Rect[] nicknamesRect = new Rect[8];
-    Rect[] middleNicknamesRect = new Rect[8];
-    Rect[] expsRect = new Rect[8];
-    Rect[] middleExpsRect = new Rect[8];
+    public PlayerCell[] playerCells;
+    Rect[] nicknamesRect = new Rect[15];
+    Rect[] middleNicknamesRect = new Rect[15];
+    Rect[] expsRect = new Rect[15];
+    Rect[] middleExpsRect = new Rect[15];
     GUIStyle guiStyle = new GUIStyle();
-    Rect expRect, timeRect, hpRect, armorRect;
+    GUIStyle localPlayerLabelGuiStyle = new GUIStyle();
+    Rect expRect, timeRect, hpRect, armorRect, roundIsOverLabel;
     public int hp, armor, exp;
     public List<string> wordsList = new List<string>();
     RoundController roundController;
@@ -69,6 +70,8 @@ public class UserInterface : MonoBehaviour {
         wordsList.Add(languageReader.langDict[language]["play"]);
         //18
         wordsList.Add(languageReader.langDict[language]["time"]);
+        //19
+        wordsList.Add(languageReader.langDict[language]["roundIsOver"]);
     }
 
     void Awake()
@@ -85,14 +88,18 @@ public class UserInterface : MonoBehaviour {
         hpRect = new Rect(pixel, Screen.height - pixel * 2, pixel * 4, pixel);
         guiStyle.fontSize = Convert.ToInt32(pixel);
         guiStyle.normal.textColor = Color.white;
+        localPlayerLabelGuiStyle.fontSize = Convert.ToInt32(pixel);
+        localPlayerLabelGuiStyle.normal.textColor = Color.green;
         roundController = GameObject.Find("SceneManager").GetComponent<RoundController>();
+
+        roundIsOverLabel = new Rect(Screen.width / 2 - pixel * 7, pixel, pixel * 5, pixel);
 
         for (int i = 0; i < nicknamesRect.GetLength(0); i++)
         {
-            nicknamesRect[i] = new Rect(Screen.width - pixel * 8, pixel + pixel * i, pixel * 5, pixel);
-            middleNicknamesRect[i] = new Rect((Screen.width / 2) - pixel * 5, pixel + pixel * i, pixel * 5, pixel);
+            nicknamesRect[i] = new Rect(Screen.width - pixel * 10, pixel + pixel * i, pixel * 5, pixel);
+            middleNicknamesRect[i] = new Rect(Screen.width / 2 - pixel * 8, pixel * 2 + pixel * i, pixel * 5, pixel);
             expsRect[i] = new Rect(Screen.width - pixel * 3, pixel + pixel * i, pixel * 3, pixel);
-            middleExpsRect[i] = new Rect((Screen.width / 2), pixel + pixel * i, pixel * 3, pixel);
+            middleExpsRect[i] = new Rect(Screen.width / 2, pixel * 2 + pixel * i, pixel * 3, pixel);
         }
     }
 
@@ -108,20 +115,37 @@ public class UserInterface : MonoBehaviour {
             GUI.Label(armorRect, wordsList[12] + " " + armor, guiStyle);
 
             if (Tab)
-                if (exps != null)
-                    for (int i = 0; i < exps.GetLength(0) && i < nicknamesRect.GetLength(0); i++)
-                    {
-                        GUI.Label(nicknamesRect[i], exps[i].nickname, guiStyle);
-                        GUI.Label(expsRect[i], Convert.ToString(exps[i].exp), guiStyle);
+                if (playerCells != null)
+                    for (int i = 0; i < playerCells.GetLength(0) && i < nicknamesRect.GetLength(0); i++)
+                    {                        
+                        if (!playerCells[i].IsLocalPlayer)
+                        {
+                            GUI.Label(expsRect[i], Convert.ToString(playerCells[i].Exp), guiStyle);
+                            GUI.Label(nicknamesRect[i], (i + 1) + "." + playerCells[i].Nickname, guiStyle);
+                        }
+                        else
+                        {
+                            GUI.Label(expsRect[i], Convert.ToString(playerCells[i].Exp), localPlayerLabelGuiStyle);
+                            GUI.Label(nicknamesRect[i], (i + 1) + "." + playerCells[i].Nickname, localPlayerLabelGuiStyle);
+                        }
                     }
         }
         else
         {
-            if (exps != null)
-                for (int i = 0; i < exps.GetLength(0) && i < nicknamesRect.GetLength(0); i++)
-                {
-                    GUI.Label(middleNicknamesRect[i], exps[i].nickname, guiStyle);
-                    GUI.Label(middleExpsRect[i], Convert.ToString(exps[i].exp), guiStyle);
+            GUI.Label(roundIsOverLabel, wordsList[19], guiStyle);
+            if (playerCells != null)
+                for (int i = 0; i < playerCells.GetLength(0) && i < nicknamesRect.GetLength(0); i++)
+                {                    
+                    if (!playerCells[i].IsLocalPlayer)
+                    {
+                        GUI.Label(middleNicknamesRect[i], (i + 1) + "." + playerCells[i].Nickname, guiStyle);
+                        GUI.Label(middleExpsRect[i], Convert.ToString(playerCells[i].Exp), guiStyle);
+                    }
+                    else
+                    {
+                        GUI.Label(middleNicknamesRect[i], (i + 1) + "." + playerCells[i].Nickname, localPlayerLabelGuiStyle);
+                        GUI.Label(middleExpsRect[i], Convert.ToString(playerCells[i].Exp), localPlayerLabelGuiStyle);
+                    }
                 }
         }
     }

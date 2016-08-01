@@ -6,16 +6,11 @@ public class Map {
     public const int XDemension = 21, YDemension = 3, ZDemension = 21,
                      ScaleXZ = 20, ScaleFloorY = 5, LevelHeight = 30,
                      WholesCount = (XDemension * YDemension) / 2, EndsCount = (XDemension * ZDemension) / 50, BonusesCount = (XDemension * YDemension) / 10;
-    public enum ObjectElementType { Void, Floor, Wall, Start, End};
+    public enum ObjectElementType { Void, Floor, Wall, Teleport, TeleportationPlace};
     public enum UnitElementType { Void, Unit };
     public ObjectElementType[,,]  map = new ObjectElementType[XDemension, YDemension, ZDemension];
     public UnitElementType[,,] unitMap = new UnitElementType[XDemension, YDemension, ZDemension];
     GameObject[,,] mapObjects = new GameObject[XDemension, YDemension, ZDemension];
-
-    public Map()
-    {
-
-    }
 
     public void CreateMap()
     {
@@ -64,11 +59,12 @@ public class Map {
                 mapObjects[i, j, k] = GameObject.Instantiate(Resources.Load("Wall" + j)) as GameObject;
                 sizeY = LevelHeight;
                 break;
-            case ObjectElementType.Start:
+            case ObjectElementType.Teleport:
                 mapObjects[i, j, k] = GameObject.Instantiate(Resources.Load("Floor" + j)) as GameObject;
                 break;
-            case ObjectElementType.End:
+            case ObjectElementType.TeleportationPlace:
                 mapObjects[i, j, k] = GameObject.Instantiate(Resources.Load("Floor" + j)) as GameObject;
+                
                 break;
         }
 
