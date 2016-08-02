@@ -4,8 +4,10 @@ using UnityEngine.Networking;
 
 public class MovementController : NetworkBehaviour {
 
+    [SyncVar]
+    public bool isParalysis = false;
     Rigidbody _rigidbody;
-    float speed = 120, jumpForce = 60, k_GroundRayLength = 3, maxSpeed = 40;
+    float speed = 120, jumpForce = 60, k_GroundRayLength = 3, maxSpeed = 30;
     bool grounded;
     public bool jump;
     public Vector3 movement = Vector3.zero;
@@ -18,7 +20,7 @@ public class MovementController : NetworkBehaviour {
 
     void FixedUpdate()
     {
-        if (isLocalPlayer)
+        if (isLocalPlayer && !isParalysis)
         {
             grounded = Physics.Raycast(transform.position, -Vector3.up, k_GroundRayLength);
             if (jump && grounded)

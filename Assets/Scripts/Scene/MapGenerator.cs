@@ -199,7 +199,7 @@ public class MapGenerator : NetworkBehaviour {
     private void MarkHoles()
     {
         for (int l = 0; l < Map.YDemension; l++)
-        for (int i = 0; i < Map.WholesCount; i++)
+        for (int i = 0; i < Map.WholesCount / (Map.YDemension - l); i++)
         {
             Point2D posPoint = floorPoints[l][floorIndexes[l]];
             floorIndexes[l]++;

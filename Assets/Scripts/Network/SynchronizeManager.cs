@@ -6,23 +6,20 @@ public class SynchronizeManager : NetworkBehaviour
 {
     const float Damp = 60;
 
-    WeaponController weaponController;
-    AIWeaponController aiWeaponController;
-    Health healthScript;
-    Exp expScript;
     Rigidbody _rigidbody;
     bool isAI = false;
-
+    bool isParalisis = false;
+    float paralisisTime;
+    MovementController movementController;
+    AI ai;
     Vector3 currentPos = Vector3.zero;
     Quaternion currentRot = Quaternion.identity;
 
     void Start()
     {
-        healthScript = gameObject.GetComponent<Health>();
-        weaponController = gameObject.GetComponent<WeaponController>();
-        aiWeaponController = gameObject.GetComponent<AIWeaponController>();
-        expScript = gameObject.GetComponent<Exp>();
         _rigidbody = gameObject.GetComponent<Rigidbody>();
+        movementController = gameObject.GetComponent<MovementController>();
+        ai = gameObject.GetComponent<AI>();
         isAI = gameObject.tag == "AI";
         if (!isAI)
         {
@@ -41,103 +38,130 @@ public class SynchronizeManager : NetworkBehaviour
         }
     }
 
-    [Command(channel = 0)]
-    public void CmdUpdatePosDamp(float x, float y, float z)
+    public void UpdatePosition(Vector3 pos, bool setVelocityToZero)
     {
         if (isServer)
         {
-            currentPos = new Vector3(x, y, z);
-            RpcUpdatePosDamp(x, y, z);
+            if (isLocalPlayer)
+            {
+                gameObject.GetComponent<Rigidbody>().position = pos;
+                if (setVelocityToZero)
+                {
+                    gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
+                }
+            }
+            else
+            {
+                RpcUpdatePos(pos, setVelocityToZero);
+            }
         }
     }
 
-    [Command(channel = 0)]
-    public void CmdUpdateRotationDamp(float w, float x, float y, float z)
+    public void AddForce(Vector3 force)
     {
         if (isServer)
         {
-            currentRot = new Quaternion(x, y, z, w);
-            RpcUpdateRotationDamp(w, x, y, z);
+            if (isLocalPlayer || (isServer && isAI))
+            {
+                gameObject.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+                gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
+                gameObject.GetComponent<Rigidbody>().AddForce(force, ForceMode.Impulse);
+            }
+            else
+            {
+                RpcAddForce(force);
+            }
         }
     }
 
-    [ClientRpc(channel = 0)]
-    public void RpcUpdatePosDamp(float x, float y, float z)
+    public void AddExplosionForce(Vector3 pos, float power)
     {
-        if (!isLocalPlayer && isClient && !isServer)
+        if (isServer)
         {
-            if (_rigidbody != null)
-                currentPos = new Vector3(x, y, z);
+            if (isLocalPlayer || (isServer && isAI))
+            {
+                gameObject.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+                gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
+                gameObject.GetComponent<Rigidbody>().AddExplosionForce(power, pos, Wavegun.PointRadius * 3);
+            }
+            else
+            {
+                RpcAddForce(pos);
+            }
         }
     }
 
-    [ClientRpc(channel = 0)]
-    public void RpcUpdateRotationDamp(float w, float x, float y, float z)
+    public void SetParalysisOn()
     {
-        if (!isLocalPlayer && isClient && !isServer)
+        isParalisis = true;
+        paralisisTime = Time.time;
+        UpdatePosition(transform.position, true);
+        if (isAI)
         {
-            currentRot = new Quaternion(x, y, z, w);
+            ai.isParalysis = true;
+        }
+        else
+        {
+            movementController.isParalysis = true;
+        }
+    }
+
+    public void SetParalysisOff()
+    {
+        isParalisis = false;
+        if (isAI)
+        {
+            ai.isParalysis = false;
+        }
+        else
+        {
+            movementController.isParalysis = false;
+        }
+    }
+
+    void Update()
+    {
+        if (isServer)
+        {
+            if (Time.time - paralisisTime > Wavegun.ParalysisTime)
+            {
+                SetParalysisOff();
+            }
         }
     }
 
     [ClientRpc(channel = 0)]
-    public void RpcUpdatePos(Vector3 pos)
+    void RpcUpdatePos(Vector3 pos, bool setVelocityToZero)
     {
         if (isLocalPlayer)
         {
             gameObject.GetComponent<Rigidbody>().position = pos;
-            gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
+            if (setVelocityToZero)
+            {
+                gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
+            }
         }
     }
 
     [ClientRpc(channel = 0)]
-    public void RpcAddForce(Vector3 force)
+    void RpcAddForce(Vector3 force)
     {
         if (isLocalPlayer)
         {
+            gameObject.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+            gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
             gameObject.GetComponent<Rigidbody>().AddForce(force, ForceMode.Impulse);
         }
     }
 
-    void BlaBla()
+    [ClientRpc(channel = 0)]
+    void RpcAddExplosionForce(Vector3 pos, float power)
     {
-        if (!isAI)
+        if (isLocalPlayer)
         {
-            if (isLocalPlayer)
-            {
-                if (isServer)
-                {
-                    RpcUpdatePosDamp(_rigidbody.position.x, _rigidbody.position.y, _rigidbody.position.z);
-                    RpcUpdateRotationDamp(transform.rotation.w, transform.rotation.x, transform.rotation.y, transform.rotation.z);
-                }
-                else
-                {
-                    CmdUpdatePosDamp(_rigidbody.position.x, _rigidbody.position.y, _rigidbody.position.z);
-                    CmdUpdateRotationDamp(transform.rotation.w, transform.rotation.x, transform.rotation.y, transform.rotation.z);
-                }
-            }
-            else
-            {
-                if (_rigidbody != null && currentPos != Vector3.zero)
-                    _rigidbody.position = Vector3.Lerp(transform.position, currentPos, Damp * Time.deltaTime);
-                if (_rigidbody != null && currentRot != Quaternion.identity)
-                    transform.rotation = Quaternion.Lerp(transform.rotation, currentRot, Damp * Time.deltaTime);
-            }
-        }
-        else 
-        {
-            if (isServer)
-            {
-                RpcUpdatePosDamp(_rigidbody.position.x, _rigidbody.position.y, _rigidbody.position.z);
-                RpcUpdateRotationDamp(transform.rotation.w, transform.rotation.x, transform.rotation.y, transform.rotation.z);
-            }
-            else
-            {
-                if (_rigidbody != null && currentPos != Vector3.zero)
-                    _rigidbody.position = Vector3.Lerp(transform.position, currentPos, Damp * Time.deltaTime);
-                if (_rigidbody != null && currentRot != Quaternion.identity)
-                    transform.rotation = Quaternion.Lerp(transform.rotation, currentRot, Damp * Time.deltaTime);
-            }
+            gameObject.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+            gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
+            gameObject.GetComponent<Rigidbody>().AddExplosionForce(power, pos, Wavegun.PointRadius * 3);
         }
     }
 }

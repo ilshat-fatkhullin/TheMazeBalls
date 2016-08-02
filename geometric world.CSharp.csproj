@@ -83,6 +83,7 @@
     <Compile Include="Assets\Scripts\Controllers\MovementController.cs" />
     <Compile Include="Assets\Scripts\Controllers\RoundController.cs" />
     <Compile Include="Assets\Scripts\Controllers\SteelArm.cs" />
+    <Compile Include="Assets\Scripts\Controllers\Wavegun.cs" />
     <Compile Include="Assets\Scripts\Controllers\Weapon.cs" />
     <Compile Include="Assets\Scripts\Controllers\WeaponController.cs" />
     <Compile Include="Assets\Scripts\Interface\Crosshair.cs" />

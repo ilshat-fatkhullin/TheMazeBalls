@@ -14,7 +14,7 @@ public class EndPlatform : NetworkBehaviour {
                 col.GetComponent<Health>().startTime = Time.time;
                 if (col.tag == "Player")
                 {
-                    col.GetComponent<SynchronizeManager>().RpcUpdatePos(new Vector3(col.transform.position.x, col.transform.position.y + Map.LevelHeight, col.transform.position.z));
+                    col.GetComponent<SynchronizeManager>().UpdatePosition(new Vector3(col.transform.position.x, col.transform.position.y + Map.LevelHeight, col.transform.position.z), false);
                 }
                 else
                 {

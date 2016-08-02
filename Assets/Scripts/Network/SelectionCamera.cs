@@ -100,7 +100,7 @@ public class SelectionCamera : NetworkBehaviour {
         character.transform.position = generatedPos;
         NetworkServer.Spawn(character);
         NetworkServer.ReplacePlayerForConnection(connectionToClient, character, playerControllerId);
-        character.GetComponent<SynchronizeManager>().RpcUpdatePos(generatedPos);
+        character.GetComponent<SynchronizeManager>().UpdatePosition(generatedPos, true);
         character.GetComponent<FlagsSynchronizer>().flagIndex = index;
         FlagManager.UpdateFlags();
         character.GetComponent<Respawner>().spawn = generatedPos;

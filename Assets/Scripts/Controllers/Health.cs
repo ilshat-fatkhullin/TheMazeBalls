@@ -43,10 +43,11 @@ public class Health : NetworkBehaviour {
 
             if (!(gameObject.tag == "AI"))
             {
-                gameObject.GetComponent<SynchronizeManager>().RpcAddForce((((transform.position - pos).normalized * 3) + Vector3.up * 0.5F) * 60);
+                gameObject.GetComponent<SynchronizeManager>().AddForce((((transform.position - pos).normalized * 3) + Vector3.up * 0.5F) * 60);
             }
             else
             {
+                _rigidbody.velocity = Vector3.zero;
                 _rigidbody.AddForce((((transform.position - pos).normalized * 3) + Vector3.up * 0.5F) * 60, ForceMode.Impulse);
             }
 

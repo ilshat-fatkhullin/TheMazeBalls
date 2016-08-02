@@ -3,8 +3,10 @@ using UnityEngine.Networking;
 using System.Collections;
 
 public class AI : NetworkBehaviour {
+
+    public bool isParalysis = false;
     MazeNavigator mazeNavigator;
-    float punchDistance = 6, fireDistance = 50, speed = 120, maxSpeed = 40;
+    float punchDistance = 6, fireDistance = 50, speed = 120, maxSpeed = 30;
     Rigidbody _rigidbody;
     public Transform enemie;
     AIWeaponController weaponController;
@@ -24,7 +26,7 @@ public class AI : NetworkBehaviour {
 
     void FixedUpdate()
     {
-        if (isServer)
+        if (isServer && !isParalysis)
         {
             bool grounded = Physics.Raycast(transform.position, -Vector3.up, k_GroundRayLength);
             if (mazeNavigator.jump && grounded)
