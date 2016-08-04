@@ -4,19 +4,19 @@ using System.Collections;
 
 public class Wavegun : Weapon
 {
-    public const float ParalysisTime = 5;
-    const float Power = 100000;
-    const float FireDelay = 10;
-    const float Angle = 30;
+    public const float ParalysisTime = 1;
+    const float Power = 100;
+    const float FireDelay = 1;
+    const float Angle = 15;
     const int EnemyLayer = 1 << 8;
-    public const int PointRadius = 30;
-    public const int PersonRadius = 120;
+    public const int PersonRadius = 60;
     public float Accuracy = 0;
     float lastShootTime = -FireDelay;
     bool isAI;
     public Transform firePoint;
     SphereCollider coll;
     AudioSource source;
+
     void Start()
     {
         isFireArm = true;
@@ -31,7 +31,7 @@ public class Wavegun : Weapon
         Shoot(dir, pos, isParalise);
     }
 
-    void Shoot(Vector3 direction, Vector3 position, bool isParalise)
+    void Shoot(Vector3 direction, Vector3 position, bool isBack)
     {
         source.Play();
         RaycastHit hit = new RaycastHit();
@@ -41,39 +41,34 @@ public class Wavegun : Weapon
         if (hit.point != Vector3.zero)
         {
             GameObject wave;
-            if (isParalise)
+            if (isBack)
             {
-                wave = GameObject.Instantiate(Resources.Load("WaveExplosion")) as GameObject;
-                wave.transform.position = hit.point;
+                wave = GameObject.Instantiate(Resources.Load("ParaliseWave")) as GameObject;
             }
             else
             {
-                wave = GameObject.Instantiate(Resources.Load("Afterburner")) as GameObject;
-                wave.transform.position = weapon.transform.position;
-                wave.transform.rotation = Quaternion.LookRotation(transform.forward);
+                wave = GameObject.Instantiate(Resources.Load("ForceWave")) as GameObject;
             }
+            wave.transform.position = weapon.transform.position;
+            wave.transform.rotation = Quaternion.LookRotation(transform.forward);
             NetworkServer.Spawn(wave);
 
             Collider[] units;
-            if (isParalise)
-            {
-                units = Physics.OverlapSphere(hit.point, PointRadius, EnemyLayer);
-            }
-            else
-            {
-                units = Physics.OverlapSphere(transform.position, PersonRadius, EnemyLayer);
-            }
+            units = Physics.OverlapSphere(transform.position, PersonRadius, EnemyLayer);
 
             foreach (Collider unit in units)
             {
-                if (isParalise)
+                if (Vector3.Angle(transform.forward, unit.transform.position - transform.position) <= Angle)
                 {
+                    if (isBack)
+                    {
+                        unit.GetComponent<SynchronizeManager>().AddForce(-(transform.forward + transform.up * 0.25F) * Power);
+                    }
+                    else
+                    {
+                        unit.GetComponent<SynchronizeManager>().AddForce((transform.forward + transform.up * 0.25F) * Power);
+                    }
                     unit.GetComponent<SynchronizeManager>().SetParalysisOn();
-                }
-                else
-                {
-                    if (Vector3.Angle(transform.forward, unit.transform.position - transform.position) <= Angle)
-                    unit.GetComponent<SynchronizeManager>().AddForce((transform.forward + transform.up * 0.25F) * Power);
                 }
             }
         }

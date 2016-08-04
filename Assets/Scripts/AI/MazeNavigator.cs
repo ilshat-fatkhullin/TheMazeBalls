@@ -26,7 +26,7 @@ public class MazeNavigator : NetworkBehaviour {
         return true;
     }
 
-    private Vector3 GetClosestPoint(Vector3 pos)
+    public static Vector3 GetClosestPoint(Vector3 pos)
     {
         int x = (int)((pos.x + Map.ScaleXZ / 2) / Map.ScaleXZ);
         int y = (int)(pos.y / Map.LevelHeight);

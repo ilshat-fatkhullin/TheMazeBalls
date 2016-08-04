@@ -6,13 +6,17 @@ public class AI : NetworkBehaviour {
 
     public bool isParalysis = false;
     MazeNavigator mazeNavigator;
-    float punchDistance = 6, fireDistance = 50, speed = 120, maxSpeed = 30;
+    float punchDistance = 6.5F, fireDistance = 50, speed = 120, maxSpeed = 30;
     Rigidbody _rigidbody;
     public Transform enemie;
     AIWeaponController weaponController;
     const float Delay = 1.5F;
+    const float PunchDelay = 1;
     float k_GroundRayLength = 3;
     float jumpForce = 60;
+    float punchStartTime;
+    int fireArm = 1;
+    bool isBackForce = false;
 
 	void Start () {
         if (isServer)
@@ -21,6 +25,8 @@ public class AI : NetworkBehaviour {
             mazeNavigator = gameObject.GetComponent<MazeNavigator>();
             weaponController = gameObject.GetComponent<AIWeaponController>();
             gameObject.GetComponent<FlagsSynchronizer>().flagIndex = Random.Range(0, 124);
+            fireArm = Random.Range(0, 2) + 1;
+            isBackForce = Random.Range(0, 2) == 1;
         }
     }
 
@@ -54,6 +60,7 @@ public class AI : NetworkBehaviour {
             if (Time.time - lastUpdateTime > Delay)
             {
                 lastUpdateTime = Time.time;
+                fireArm = Random.Range(0, 2) + 1;
                 enemie = null;
             }
 
@@ -63,14 +70,17 @@ public class AI : NetworkBehaviour {
                 float distance = Vector3.Distance(transform.position, enemie.position);
                 if (distance < punchDistance)
                 {
+                    if (Time.time - punchStartTime > PunchDelay)
                     Punch();
                 }
                 else if (distance < fireDistance)
                 {
+                    punchStartTime = Time.time;
                     Fire();
                 }
                 else
                 {
+                    punchStartTime = Time.time;
                     weaponController.isEnabled = false;
                     weaponController.isBlock = false;
                 }
@@ -86,15 +96,23 @@ public class AI : NetworkBehaviour {
 
     void Punch()
     {
-        weaponController.weaponIndex = 1;
+        weaponController.weaponIndex = 0;
         weaponController.isEnabled = true;
         weaponController.isBlock = false;
     }
 
     void Fire()
     {
-        weaponController.weaponIndex = 0;
-        weaponController.isEnabled = true;
-        weaponController.isBlock = false;
+        weaponController.weaponIndex = fireArm;
+        if (isBackForce)
+        {
+            weaponController.isEnabled = false;
+            weaponController.isBlock = true;
+        }
+        else
+        {
+            weaponController.isEnabled = true;
+            weaponController.isBlock = false;
+        }
     }
 }

@@ -71,16 +71,17 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\AI\AI.cs" />
     <Compile Include="Assets\Scripts\AI\AIFlashlightController.cs" />
+    <Compile Include="Assets\Scripts\AI\AIVision.cs" />
     <Compile Include="Assets\Scripts\AI\AIWeaponController.cs" />
     <Compile Include="Assets\Scripts\AI\MazeNavigator.cs" />
     <Compile Include="Assets\Scripts\Controllers\BonusController.cs" />
     <Compile Include="Assets\Scripts\Controllers\CameraController.cs" />
-    <Compile Include="Assets\Scripts\Controllers\Distributor.cs" />
     <Compile Include="Assets\Scripts\Controllers\Exp.cs" />
     <Compile Include="Assets\Scripts\Controllers\FireArm.cs" />
     <Compile Include="Assets\Scripts\Controllers\FlashLightController.cs" />
     <Compile Include="Assets\Scripts\Controllers\Health.cs" />
     <Compile Include="Assets\Scripts\Controllers\MovementController.cs" />
+    <Compile Include="Assets\Scripts\Controllers\Receiver.cs" />
     <Compile Include="Assets\Scripts\Controllers\RoundController.cs" />
     <Compile Include="Assets\Scripts\Controllers\SteelArm.cs" />
     <Compile Include="Assets\Scripts\Controllers\Wavegun.cs" />

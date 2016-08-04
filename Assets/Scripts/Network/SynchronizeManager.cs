@@ -74,23 +74,6 @@ public class SynchronizeManager : NetworkBehaviour
         }
     }
 
-    public void AddExplosionForce(Vector3 pos, float power)
-    {
-        if (isServer)
-        {
-            if (isLocalPlayer || (isServer && isAI))
-            {
-                gameObject.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
-                gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
-                gameObject.GetComponent<Rigidbody>().AddExplosionForce(power, pos, Wavegun.PointRadius * 3);
-            }
-            else
-            {
-                RpcAddForce(pos);
-            }
-        }
-    }
-
     public void SetParalysisOn()
     {
         isParalisis = true;
@@ -151,17 +134,6 @@ public class SynchronizeManager : NetworkBehaviour
             gameObject.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
             gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
             gameObject.GetComponent<Rigidbody>().AddForce(force, ForceMode.Impulse);
-        }
-    }
-
-    [ClientRpc(channel = 0)]
-    void RpcAddExplosionForce(Vector3 pos, float power)
-    {
-        if (isLocalPlayer)
-        {
-            gameObject.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
-            gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
-            gameObject.GetComponent<Rigidbody>().AddExplosionForce(power, pos, Wavegun.PointRadius * 3);
         }
     }
 }
