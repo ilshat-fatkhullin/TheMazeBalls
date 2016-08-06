@@ -42,7 +42,7 @@
     <color>Color:</color>
     <mouth>Mouth:</mouth>
     <eyes>Eyes:</eyes>
-    <time>Time:</time>
+    <time>Time remaining:</time>
     <roundIsOver>Round is over</roundIsOver>
   </language>
   <language>
@@ -87,7 +87,7 @@
     <color>Цвет:</color>
     <mouth>Рот:</mouth>
     <eyes>Глаза:</eyes>
-    <time>Время:</time>
+    <time>Времени осталось:</time>
     <roundIsOver>Раунд окончен</roundIsOver>
   </language>
 </languages>

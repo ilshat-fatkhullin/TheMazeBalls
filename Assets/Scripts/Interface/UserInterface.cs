@@ -86,7 +86,7 @@ public class UserInterface : MonoBehaviour {
         timeRect = new Rect(pixel, pixel * 2.5F, pixel * 4, pixel);
         armorRect = new Rect(pixel, Screen.height - pixel * 4, pixel * 4, pixel);
         hpRect = new Rect(pixel, Screen.height - pixel * 2, pixel * 4, pixel);
-        guiStyle.fontSize = Convert.ToInt32(pixel);
+        guiStyle.fontSize = Convert.ToInt32(pixel * 0.75F);
         guiStyle.normal.textColor = Color.white;
         localPlayerLabelGuiStyle.fontSize = Convert.ToInt32(pixel);
         localPlayerLabelGuiStyle.normal.textColor = Color.green;
@@ -110,7 +110,14 @@ public class UserInterface : MonoBehaviour {
         if (!roundController.IsRoundEnd)
         {
             GUI.Label(expRect, wordsList[13] + " " + exp, guiStyle);
-            GUI.Label(timeRect, wordsList[18] + " " + (roundController.Time / 60) + ":" + (roundController.Time % 60), guiStyle);
+            if (roundController.Time % 60 < 10)
+            {
+                GUI.Label(timeRect, wordsList[18] + " " + (roundController.Time / 60) + ":0" + (roundController.Time % 60), guiStyle);
+            }
+            else
+            {
+                GUI.Label(timeRect, wordsList[18] + " " + (roundController.Time / 60) + ":" + (roundController.Time % 60), guiStyle);
+            }
             GUI.Label(hpRect, wordsList[11] + " " + hp, guiStyle);
             GUI.Label(armorRect, wordsList[12] + " " + armor, guiStyle);
 

@@ -7,7 +7,7 @@ public class Wavegun : Weapon
     public const float ParalysisTime = 1;
     const float Power = 100;
     const float FireDelay = 1;
-    const float Angle = 15;
+    const float Angle = 25;
     const int EnemyLayer = 1 << 8;
     public const int PersonRadius = 60;
     public float Accuracy = 0;
