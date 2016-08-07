@@ -34,12 +34,26 @@ public class FireArm : Weapon {
         coll.enabled = true;
         if (hit.point != Vector3.zero)
         {
-            GameObject bullet = GameObject.Instantiate(Resources.Load("Flare")) as GameObject;
-            bullet.transform.position = hit.point;
-            NetworkServer.Spawn(bullet);
+            CreateParticle(hit.point);
+            RpcCreateParticle(hit.point);
             if (hit.collider.GetComponent<Health>() != null)
                 hit.collider.GetComponent<Health>().Damage(Damage, transform.position, transform);
         }
+    }
+
+    [ClientRpc(channel = 0)]
+    void RpcCreateParticle(Vector3 point)
+    {
+        if (isClient)
+        {
+            CreateParticle(point);
+        }
+    }
+
+    void CreateParticle(Vector3 point)
+    {
+        GameObject bullet = GameObject.Instantiate(Resources.Load("Flare")) as GameObject;
+        bullet.transform.position = point;
     }
 
     [Command(channel = 0)]

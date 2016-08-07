@@ -6,7 +6,7 @@ public class Wavegun : Weapon
 {
     public const float ParalysisTime = 1;
     const float Power = 100;
-    const float FireDelay = 1;
+    const float FireDelay = 1.5F;
     const float Angle = 25;
     const int EnemyLayer = 1 << 8;
     public const int PersonRadius = 60;
@@ -34,44 +34,52 @@ public class Wavegun : Weapon
     void Shoot(Vector3 direction, Vector3 position, bool isBack)
     {
         source.Play();
-        RaycastHit hit = new RaycastHit();
-        coll.enabled = false;
-        Physics.Raycast(position, direction + Vector3.right * Random.Range(-Accuracy, Accuracy) + Vector3.up * Random.Range(-Accuracy, Accuracy), out hit, 500);
-        coll.enabled = true;
-        if (hit.point != Vector3.zero)
+        CreateParticle(isBack);
+        RpcCreateParticle(isBack);
+
+        Collider[] units;
+        units = Physics.OverlapSphere(transform.position, PersonRadius, EnemyLayer);
+
+        foreach (Collider unit in units)
         {
-            GameObject wave;
-            if (isBack)
+            if (Vector3.Angle(transform.forward, unit.transform.position - transform.position) <= Angle)
             {
-                wave = GameObject.Instantiate(Resources.Load("ParaliseWave")) as GameObject;
-            }
-            else
-            {
-                wave = GameObject.Instantiate(Resources.Load("ForceWave")) as GameObject;
-            }
-            wave.transform.position = weapon.transform.position;
-            wave.transform.rotation = Quaternion.LookRotation(transform.forward);
-            NetworkServer.Spawn(wave);
-
-            Collider[] units;
-            units = Physics.OverlapSphere(transform.position, PersonRadius, EnemyLayer);
-
-            foreach (Collider unit in units)
-            {
-                if (Vector3.Angle(transform.forward, unit.transform.position - transform.position) <= Angle)
+                if (isBack)
                 {
-                    if (isBack)
-                    {
-                        unit.GetComponent<SynchronizeManager>().AddForce(-(transform.forward + transform.up * 0.25F) * Power);
-                    }
-                    else
-                    {
-                        unit.GetComponent<SynchronizeManager>().AddForce((transform.forward + transform.up * 0.25F) * Power);
-                    }
-                    unit.GetComponent<SynchronizeManager>().SetParalysisOn();
+                    unit.GetComponent<SynchronizeManager>().AddForce(-(transform.forward + transform.up * 0.25F) * Power);
                 }
+                else
+                {
+                    unit.GetComponent<SynchronizeManager>().AddForce((transform.forward + transform.up * 0.25F) * Power);                    
+                }
+                unit.GetComponent<FallController>().SetPuncher(transform);
+                unit.GetComponent<SynchronizeManager>().SetParalysisOn();
             }
         }
+    }
+
+    [ClientRpc(channel = 0)]
+    void RpcCreateParticle(bool isBack)
+    {
+        if (isClient && !isLocalPlayer)
+        {
+            CreateParticle(isBack);
+        }
+    }
+
+    void CreateParticle(bool isBack)
+    {
+        GameObject wave;
+        if (isBack)
+        {
+            wave = GameObject.Instantiate(Resources.Load("ParaliseWave")) as GameObject;
+        }
+        else
+        {
+            wave = GameObject.Instantiate(Resources.Load("ForceWave")) as GameObject;
+        }
+        wave.transform.position = weapon.transform.position;
+        wave.transform.rotation = Quaternion.LookRotation(transform.forward);
     }
 
     [Command(channel = 0)]
@@ -99,6 +107,7 @@ public class Wavegun : Weapon
                 {
                     source.Play();
                     lastShootTime = Time.time;
+                    CreateParticle(isBlock);
                     if (isServer)
                     {
                         Shoot(transform.forward, firePoint.position, isBlock);

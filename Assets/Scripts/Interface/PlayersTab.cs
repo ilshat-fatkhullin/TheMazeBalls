@@ -13,7 +13,7 @@ public class PlayersTab : NetworkBehaviour {
 
     [SyncVar]
     string array;
-    string lastArray;
+    string lastArray = "";
 
     void Start()
     {
@@ -77,7 +77,7 @@ public class PlayersTab : NetworkBehaviour {
                     }
                 }
             }
-            else if (lastArray != array)
+            else if (lastArray != array && array != "")
             {
                 lastArray = array;
                 userInterface.playerCells = GetArrayFromString(array);
@@ -91,10 +91,8 @@ public class PlayersTab : NetworkBehaviour {
         PlayerCell[] returnedValue = new PlayerCell[rows.GetLength(0)];
         for (int i = 0; i < rows.GetLength(0); i++)
         {
-            string[] stringStruct = val.Split('%');
-            returnedValue[i].Nickname = stringStruct[0];
-            returnedValue[i].Exp = Convert.ToInt32(stringStruct[1]);
-            returnedValue[i].IsLocalPlayer = stringStruct[2] == "1";
+            string[] stringStruct = rows[i].Split('%');
+            returnedValue[i] = new PlayerCell(stringStruct[0], Convert.ToInt32(stringStruct[1]), stringStruct[2] == "1");
         }
 
         return returnedValue;

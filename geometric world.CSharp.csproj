@@ -77,6 +77,7 @@
     <Compile Include="Assets\Scripts\Controllers\BonusController.cs" />
     <Compile Include="Assets\Scripts\Controllers\CameraController.cs" />
     <Compile Include="Assets\Scripts\Controllers\Exp.cs" />
+    <Compile Include="Assets\Scripts\Controllers\FallController.cs" />
     <Compile Include="Assets\Scripts\Controllers\FireArm.cs" />
     <Compile Include="Assets\Scripts\Controllers\FlashLightController.cs" />
     <Compile Include="Assets\Scripts\Controllers\Health.cs" />
@@ -111,6 +112,7 @@
     <Compile Include="Assets\Scripts\Scene\MazeGenerator\MazeCell.cs" />
     <Compile Include="Assets\Scripts\Scene\MazeGenerator\Point2D.cs" />
     <Compile Include="Assets\Scripts\Scene\MazeGenerator\Program.cs" />
+    <Compile Include="Assets\Scripts\Scene\ObjectDestroyer.cs" />
     <Compile Include="Assets\Scripts\Scene\PhysicsManager.cs" />
     <Compile Include="Assets\Scripts\Scene\Respawner.cs" />
     <Compile Include="Assets\Scripts\Scene\SceneStyleController.cs" />

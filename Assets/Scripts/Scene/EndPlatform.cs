@@ -26,5 +26,6 @@ public class EndPlatform : NetworkBehaviour {
 	void Start () {
         spawner = GameObject.Find("SceneManager").GetComponent<Spawner>();
         generator = GameObject.Find("SceneManager").GetComponent<MapGenerator>();
+        transform.rotation = Quaternion.Euler(90, -180, 0);
     }
 }

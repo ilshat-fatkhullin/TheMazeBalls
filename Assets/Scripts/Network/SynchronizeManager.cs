@@ -4,7 +4,7 @@ using UnityEngine.Networking;
 
 public class SynchronizeManager : NetworkBehaviour
 {
-    const float Damp = 60;
+    const float Damp = 15;
 
     Rigidbody _rigidbody;
     bool isAI = false;
@@ -12,8 +12,10 @@ public class SynchronizeManager : NetworkBehaviour
     float paralisisTime;
     MovementController movementController;
     AI ai;
+    [SyncVar]
     Vector3 currentPos = Vector3.zero;
-    Quaternion currentRot = Quaternion.identity;
+    [SyncVar]
+    Vector3 currentRot = Vector3.zero;
 
     void Start()
     {
@@ -42,7 +44,8 @@ public class SynchronizeManager : NetworkBehaviour
     {
         if (isServer)
         {
-            if (isLocalPlayer)
+            currentPos = pos;           
+            if (isLocalPlayer || isAI)
             {
                 gameObject.GetComponent<Rigidbody>().position = pos;
                 if (setVelocityToZero)
@@ -50,10 +53,7 @@ public class SynchronizeManager : NetworkBehaviour
                     gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
                 }
             }
-            else
-            {
-                RpcUpdatePos(pos, setVelocityToZero);
-            }
+            RpcUpdatePos(pos, setVelocityToZero);
         }
     }
 
@@ -102,28 +102,49 @@ public class SynchronizeManager : NetworkBehaviour
         }
     }
 
-    void Update()
+    void FixedUpdate()
     {
         if (isServer)
         {
             if (Time.time - paralisisTime > Wavegun.ParalysisTime)
             {
                 SetParalysisOff();
+            }            
+        }
+        if (isLocalPlayer || (isAI && isServer))
+        {
+            if (!isServer)
+            {
+                CmdUpdateMovement(transform.position, transform.forward);
+            }
+            else
+            {
+                currentPos = transform.position;
+                currentRot = transform.forward;
             }
         }
+        if (!isLocalPlayer || (isAI && !isServer))
+        {
+            transform.position = Vector3.Lerp(transform.position, currentPos, Time.fixedDeltaTime * Damp);
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(currentRot), Time.fixedDeltaTime * Damp);
+        }
+    }
+
+    [Command(channel = Channels.DefaultUnreliable)]
+    void CmdUpdateMovement(Vector3 pos, Vector3 rot)
+    {
+        currentPos = pos;
+        currentRot = rot;
     }
 
     [ClientRpc(channel = 0)]
     void RpcUpdatePos(Vector3 pos, bool setVelocityToZero)
     {
-        if (isLocalPlayer)
+        gameObject.GetComponent<Rigidbody>().position = pos;
+        if (setVelocityToZero)
         {
-            gameObject.GetComponent<Rigidbody>().position = pos;
-            if (setVelocityToZero)
-            {
-                gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
-            }
-        }
+            gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        }        
     }
 
     [ClientRpc(channel = 0)]
