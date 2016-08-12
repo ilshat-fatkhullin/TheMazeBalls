@@ -23,11 +23,11 @@ public class FallController : NetworkBehaviour {
         if (isServer)
         {
             level = (int)(transform.position.y / Map.LevelHeight);
-            if (level != lastLevel && puncher != null)
+            if (level < lastLevel && puncher != null)
             {
-                lastLevel = level;
                 puncher.GetComponent<Exp>().exp += 10;
             }
+            lastLevel = level;
             if (Time.time - activeStartTime > ActiveTime)
             {
                 puncher = null;

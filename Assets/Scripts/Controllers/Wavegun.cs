@@ -6,12 +6,12 @@ public class Wavegun : Weapon
 {
     public const float ParalysisTime = 1;
     const float Power = 100;
-    const float FireDelay = 1.5F;
+    public float FireDelay = 1.5F;
     const float Angle = 25;
     const int EnemyLayer = 1 << 8;
     public const int PersonRadius = 60;
     public float Accuracy = 0;
-    float lastShootTime = -FireDelay;
+    float lastShootTime = -1.5F;
     bool isAI;
     public Transform firePoint;
     SphereCollider coll;

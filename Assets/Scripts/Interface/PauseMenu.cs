@@ -151,7 +151,14 @@ public class PauseMenu : NetworkBehaviour {
         userInterface.crosshairColor = crosshair;
         for (int i = 0; i < sources.GetLength(0); i++)
         {
-            sources[i].volume = effectsLevel;
+            if (sources[i].name != "MusicContainer")
+            {
+                sources[i].volume = effectsLevel;
+            }
+            else
+            {
+                sources[i].volume = musicLevel;
+            }
         }
     }
 }

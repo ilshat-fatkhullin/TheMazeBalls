@@ -11,12 +11,13 @@ public class Menu : MonoBehaviour {
 
     NetworkManager networkManager;
 
-    enum MenuStatus { General, SinglePlayer, Server, Client, MultiPlayer, Options, Sound, Graphics, Gameplay }
+    enum MenuStatus { General, SinglePlayer, Server, Client, MultiPlayer, Options, Sound, Graphics, Gameplay, Tutorial }
     MenuStatus menuStatus = MenuStatus.General;
 
     Rect[] buttons = new Rect[12];
     Rect backgroundRect;
     Rect menuBackgroundRect;
+    Rect tutorialWindowRect;
 
     int difficult = 1;
     int quality = 1;
@@ -47,13 +48,15 @@ public class Menu : MonoBehaviour {
     void Start () {
         backgroundRect = new Rect(0, 0, Screen.width, Screen.height);
 
-        float pixel = Screen.height / 10;
+        float pixelY = Screen.height / 10;
+        float pixelX = Screen.width / 23;
 
-        menuBackgroundRect = new Rect(0, 0, pixel * 6, Screen.height);
+        menuBackgroundRect = new Rect(0, 0, pixelX * 6, Screen.height);
+        tutorialWindowRect = new Rect(pixelX * 6, 0, pixelX * 17, pixelY * 10);
 
         for (int i = 0; i < buttons.GetLength(0); i++)
         {
-            buttons[i] = new Rect(pixel, pixel * i + pixel / 3, pixel * 4, pixel / 1.5F);
+            buttons[i] = new Rect(pixelX, pixelY * i + pixelY / 3, pixelX * 4, pixelY / 1.5F);
         }
 
         networkManager = GameObject.Find("NetworkManager").GetComponent<NetworkManager>();
@@ -148,7 +151,10 @@ public class Menu : MonoBehaviour {
         wordsList.Add(languageReader.langDict[language]["blue"]);
         //31
         wordsList.Add(languageReader.langDict[language]["lang"]);
-
+        //32
+        wordsList.Add(languageReader.langDict[language]["tutorial"]);
+        //33
+        wordsList.Add(languageReader.langDict[language]["tutorialContent"]);
 
         qualitySelection = new string[] { wordsList[22], wordsList[23], wordsList[24] };
         difficultSelection = new string[] { wordsList[25], wordsList[26], wordsList[27] };
@@ -175,11 +181,15 @@ public class Menu : MonoBehaviour {
                 {
                     menuStatus = MenuStatus.MultiPlayer;
                 }
-                if (GUI.Button(buttons[2], wordsList[2], buttonStyle))
+                if (GUI.Button(buttons[2], wordsList[32], buttonStyle))
                 {
-                    menuStatus = MenuStatus. Options;
+                    menuStatus = MenuStatus.Tutorial;
                 }
-                if (GUI.Button(buttons[3], wordsList[3], buttonStyle))
+                if (GUI.Button(buttons[3], wordsList[2], buttonStyle))
+                {
+                    menuStatus = MenuStatus.Options;
+                }
+                if (GUI.Button(buttons[4], wordsList[3], buttonStyle))
                 {
                     Application.Quit();
                 }
@@ -302,6 +312,15 @@ public class Menu : MonoBehaviour {
                     menuStatus = MenuStatus.General;
                 }
                 break;
+            case MenuStatus.Tutorial:
+                GUI.DrawTexture(tutorialWindowRect, menuBackground);
+                GUI.Label(tutorialWindowRect, wordsList[33]);
+                if (GUI.Button(buttons[0], wordsList[7], buttonStyle))
+                {
+                    menuStatus = MenuStatus.General;
+                }
+                break;
+
         }
 	}
 

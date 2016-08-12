@@ -6,10 +6,11 @@ using System;
 public class Spawner : NetworkBehaviour {
 
     MapGenerator map;
-    const int AICOUNT = (Map.XDemension * Map.YDemension) / 5;
+    const int AICOUNT = (Map.XDemension * Map.YDemension) / 7;
     GameObject[] ais;
     bool set = true;
     float accuracy;
+    float fireDelay;
 
     void Update() {
         if (set)
@@ -26,14 +27,17 @@ public class Spawner : NetworkBehaviour {
                 if (difficult == 0)
                 {
                     accuracy = 0.5F;
+                    fireDelay = 3;
                 }
                 if (difficult == 1)
                 {
                     accuracy = 0.25F;
+                    fireDelay = 2;
                 }
                 if (difficult == 2)
                 {
                     accuracy = 0.1F;
+                    fireDelay = 1;
                 }
                 SpawnAIs();
         }
@@ -61,6 +65,9 @@ public class Spawner : NetworkBehaviour {
             ais[i].GetComponent<Respawner>().AILevel = level;
             ais[i].GetComponent<AI>().lastUpdateTime = updateTime;
             ais[i].GetComponent<FireArm>().Accuracy = accuracy;
+            ais[i].GetComponent<FireArm>().FireDelay *= fireDelay;
+            ais[i].GetComponent<Wavegun>().Accuracy = accuracy;
+            ais[i].GetComponent<Wavegun>().FireDelay *= fireDelay;
             ais[i].GetComponent<AIFlashlightController>().delayTime = fUpdateTime;
             ais[i].transform.position = GenerateVoidPlace(level);
             updateTime += 1 / 60;

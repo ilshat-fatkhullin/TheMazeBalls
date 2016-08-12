@@ -44,6 +44,23 @@
     <eyes>Eyes:</eyes>
     <time>Time remaining:</time>
     <roundIsOver>Round is over</roundIsOver>
+    <tutorial>Tutorial</tutorial>
+    <tutorialContent>
+Default control:
+WASD - movement
+Space - jump
+Left mouse button - fire
+Right mouse button - block/fire
+Tab - the list of the players
+1 - crowbar
+2 - gun
+3 - wavegun
+
+The score points can be obtained by:
+-being on floor (the higher floor you are the more points you get)
+-collection Exp bonus
+-killing the enemies
+-pushing enemy to lower floor</tutorialContent>
   </language>
   <language>
     <name>Русский</name>
@@ -89,5 +106,22 @@
     <eyes>Глаза:</eyes>
     <time>Времени осталось:</time>
     <roundIsOver>Раунд окончен</roundIsOver>
+    <tutorial>Обучение</tutorial>
+    <tutorialContent>
+Стандартное управление:
+WASD - перемещение
+Space - прыжок
+Левая кнопка мыши - выстрел
+Правая кнопка мыши - блок/выстрел
+Tab - таблица игроков
+1 - монтировка
+2 - автомат
+3 - волновая пушка
+
+Очки даются за:
+-каждую секунду, исходя из этажа, на котором находится игрок(чем выше этаж, тем больше очков)
+-сбор бонуса Exp
+-убийство противника
+-сталкивание противника на этаж ниже</tutorialContent>
   </language>
 </languages>
